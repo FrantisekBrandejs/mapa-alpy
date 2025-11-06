@@ -38,23 +38,15 @@ fetch('data/VrcholyAlpy.geojson')
             },
 
             // Tato funkce se spustí pro každý prvek (vrchol)
+        // Tato funkce se spustí pro každý prvek (vrchol)
             onEachFeature: function (feature, layer) {
-                // Zkontrolujeme, zda má vrchol v datech nějaké "vlastnosti"
-                if (feature.properties) {
-                    
-                    // Sestavíme text, který se ukáže v okýnku po kliknutí
-                    // PŘEDPOKLÁDÁM, že vaše sloupce v GeoJSON se jmenují 'name' a 'ele'
-                    // Pokud se jmenují jinak, musíte 'name' a 'ele' přepsat zde:
-                    
-                    let popupText = `<strong>${feature.properties.name}</strong>`;
-                    
-                    if (feature.properties.ele) {
-                        popupText += `<br>${feature.properties.ele} m n. m.`;
-                    }
-                    
-                    // "Přilepíme" okýnko (popup) na vrstvu
-                    layer.bindPopup(popupText);
-                }
+                
+                // Ignorujeme všechny podmínky a vlastnosti.
+                // Prostě přilepíme testovací okno ke VŠEMU.
+                layer.bindPopup("TEST POPUPU");
+
+                // Také si vypíšeme do konzole (F12), že se funkce spustila
+                console.log("Přidávám popup k bodu:", feature.properties.name);
             }
         }).addTo(map); // Přidáme celou GeoJSON vrstvu do mapy
     })
