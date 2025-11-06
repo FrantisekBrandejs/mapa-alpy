@@ -1,5 +1,5 @@
 // 1. Inicializace mapy - ID 'mapa'
-const map = L.map('mapa').setView([46.5, 10.5], 6);
+const map = L.map('mapa').setView([46.5, 10.5], 7);
 
 // 2. Přidání vrstvy dlaždic (podkladová mapa) z OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -12,7 +12,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // 3. VRSTVY GEOJSON
 // --------------------------------------------------
-
+//VRCHOLY ALPY
 fetch('data/VrcholyAlpy.geojson')
     .then(response => {
         // Zkontrolujeme, zda server soubor našel
@@ -63,4 +63,29 @@ fetch('data/VrcholyAlpy.geojson')
         console.error('Chyba při načítání vrstvy VrcholyAlpy.geojson:', err);
         alert('Nepodařilo se načíst data vrcholů. Zkontrolujte název souboru a konzoli (F12).');
     });
-console.log("Mapa byla úspěšně inicializována.");
+//HRANICE ALPY
+fetch('data/HraniceAlpy.geojson')
+    .then(response => {
+        // Zkontrolujeme, zda server soubor našel
+        if (!response.ok) {
+            throw new Error('Soubor GeoJSON nebyl nalezen!');
+        }
+        return response.json(); // Převedeme odpověď na formát JSON
+    })
+    .then(data => {
+        // Ověření načtení dat
+        L.geoJSON(data, {
+            style: function (feature) {
+                return {
+                    color: "#521b53ff",
+                    weight: 2,
+                    opacity: 1
+                };
+            }
+        }).addTo(map); // Přidáme celou GeoJSON vrstvu do mapy
+    })
+    .catch(err => {
+        // Chybová hláška
+        console.error('Chyba při načítání vrstvy HraniceAlpy.geojson:', err);
+        alert('Nepodařilo se načíst data hranic. Zkontrolujte název souboru a konzoli (F12).');
+    });
