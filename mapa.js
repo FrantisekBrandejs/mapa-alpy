@@ -64,7 +64,7 @@ fetch('data/VrcholyAlpy.geojson')
         alert('Nepodařilo se načíst data vrcholů. Zkontrolujte název souboru a konzoli (F12).');
     });
 //HRANICE ALPY
-fetch('data/HraniceAlpy.geojson')
+fetch('data/Alpine_Convention_Perimeter_2025.geojson')
     .then(response => {
         // Zkontrolujeme, zda server soubor našel
         if (!response.ok) {
