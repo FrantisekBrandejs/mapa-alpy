@@ -77,7 +77,7 @@ fetch('data/Alpine_Convention_Perimeter_2025.geojson')
         L.geoJSON(data, {
             style: function (feature) {
                 return {
-                    color: "#521b53ff",
+                    color: "#861f88ff",
                     weight: 2,
                     opacity: 1,
                     fillOpacity: 0.0
