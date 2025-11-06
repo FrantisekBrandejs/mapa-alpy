@@ -79,7 +79,8 @@ fetch('data/Alpine_Convention_Perimeter_2025.geojson')
                 return {
                     color: "#521b53ff",
                     weight: 2,
-                    opacity: 1
+                    opacity: 1,
+                    fillOpacity: 0.0
                 };
             }
         }).addTo(map); // Přidáme celou GeoJSON vrstvu do mapy
