@@ -6,19 +6,93 @@
     <title>Alpská vrcholovka</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
     
     <link rel="stylesheet" href="styl.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
+    <header class="page-header">
+        <h1>Alpské vrcholy</h1>
+        <h2> nad 3 000 m. n. m.</h2>
+    </header>
 
-    <h1>Alpské vrcholovky</h1>
-    <br/>
-    <h2>Mapa alpských vrcholů nad 3 000 m. n. m.</h2>
-    <div id="mapa"></div>
+    <main class="page-main">
+        
+        <aside class="sidebar-left">
+            <h3>Poslední zdolané vrcholy</h3>
+            <ul id="peak-list" class="peak-list-container">
+                <li>Žádné vrcholy zatím nebyly zdolány.</li>
+            </ul>
+        </aside>
+        
+        <div id="mapa"></div>
 
+        <aside class="sidebar-right">
+            <h3>Statistiky</h3>
+            
+            <div class="total-elevation">
+                Celkem nastoupáno:
+                <span id="total-elevation-sum">0 m ⬆️</span>
+            </div>
+
+            <div class="filters">
+                <label for="filter-country">Země:</label>
+                <select id="filter-country">
+                    <option value="ALL">Všechny</option>
+                    <option value="AUT">Rakousko</option>
+                    <option value="ITA">Itálie</option>
+                    <option value="CHE">Švýcarsko</option>
+                    <option value="FRA">Francie</option>
+                    <option value="DEU">Německo</option>
+                    <option value="SVN">Slovinsko</option>
+                </select>
+                
+                <label for="filter-date-from">Od:</label>
+                <input type="date" id="filter-date-from">
+                
+                <label for="filter-date-to">Do:</label>
+                <input type="date" id="filter-date-to">
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="elevation-chart"></canvas>
+            </div>
+            <br><br>
+            <div class="peak-stats-container">
+                <h4>Vrcholová bilance:</h4>
+                <div class="peak-stat-item">
+                    <span class="stat-label">&gt; 4000 m:</span>
+                    <span id="stat-count-4000" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3 000 - 3 999 m:</span>
+                    <span id="stat-count-other" class="stat-value">0</span>
+                </div>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <footer class="page-footer">
+        <div class="counter-wrapper">
+            <h3>Postup</h3>
+            <div id="progress-bar-background">
+                <div id="progress-bar-fill"></div>
+                <div id="progress-bar-markers"></div>
+            </div>
+            <div id="counter-text">
+                Zdolaných vrcholů: <span id="counter-numbers">Načítám...</span>
+            </div>
+        </div>
+    </footer>
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
     
     <script src="mapa.js"></script>
-
 </body>
 </html>

@@ -1,5 +1,258 @@
-#mapa {
-    height: 80vh; 
-    width: 100%;
-    border: 1px solid black;
+/* === ZÁKLADNÍ NASTAVENÍ MŘÍŽKY (GRID) === */
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    overflow: hidden;
+    background-color: #f0f0f0;
 }
+
+body {
+    display: grid;
+    grid-template-rows: auto 1fr auto; /* Hlavička, Main (flex), Patička */
+    min-height: 100vh;
+}
+
+.page-header {
+    padding: 0 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+.page-header h1 { margin: 10px 0 5px 0; }
+.page-header h2 { margin: 5px 0 10px 0; font-size: 1.1em; font-weight: normal; }
+
+/* Třísloupcové rozložení */
+.page-main {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px; /* Levo, Střed, Pravo */
+    overflow: hidden;
+}
+
+/* === STYLY PRO LEVÝ SIDEBAR (SEZNAM) === */
+.sidebar-left {
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+    padding: 15px;
+    overflow-y: auto; /* Pouze tento panel se bude scrollovat */
+    height: 100%;
+    box-sizing: border-box;
+}
+.sidebar-left h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+.peak-list-container {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+/* Layout pro položku v seznamu */
+.peak-list-container li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: grid;
+    grid-template-columns: 1fr auto; 
+    grid-template-rows: auto auto auto auto auto; /* 5 řádků */
+    gap: 2px 8px; 
+    align-items: center;
+}
+/* Řádek 1: Název (zabere oba sloupce) */
+.peak-list-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    grid-column: 1 / 3; 
+    grid-row: 1 / 2;
+    margin-bottom: 4px;
+}
+/* Řádek 2: Nadmořská výška (vlevo) */
+.peak-list-details {
+    color: #555;
+    font-size: 0.9em;
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+/* Řádek 3: Nastoupaná elevace (vlevo, tmavě zelená) */
+.peak-list-elevation {
+    color: #006400; 
+    font-size: 0.9em;
+    font-weight: bold;
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+}
+/* Řádek 4: Stát (vlevo) */
+.peak-list-country {
+    font-size: 0.9em;
+    color: #555;
+    grid-column: 1 / 2;
+    grid-row: 4 / 5;
+    margin-top: 5px;
+}
+/* Řádek 4: Datum (vpravo) */
+.peak-list-date {
+    color: #666;
+    font-size: 0.9em;
+    grid-column: 2 / 3;
+    grid-row: 4 / 5;
+    text-align: right;
+    margin-top: 5px;
+}
+/* Řádek 5: Tlačítko (vpravo) */
+.edit-peak-emoji-btn {
+    grid-column: 2 / 3; 
+    grid-row: 5 / 6;    
+    justify-self: end; 
+    background: none;
+    border: none;
+    padding: 5px; 
+    margin-top: 5px;
+    cursor: pointer;
+    font-size: 1em; /* Zpět na normální velikost */
+    outline: none;
+}
+.edit-peak-emoji-btn:hover {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+/* --- Konec stylů levého panelu --- */
+
+
+/* === STYLY PRO MAPU === */
+#mapa {
+    height: 100%;
+    width: 100%;
+}
+.leaflet-top.leaflet-left .leaflet-control-search {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.leaflet-control-search { z-index: 1001; }
+
+/* === STYLY PRO PRAVÝ SIDEBAR (GRAF) === */
+.sidebar-right {
+    background-color: #fff;
+    border-left: 1px solid #ccc;
+    padding: 15px;
+    overflow-y: auto;
+    height: 100%;
+    box-sizing: border-box;
+}
+.sidebar-right h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+/* Statistiky 4000m */
+.peak-stats-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+.peak-stats-container h4 {
+    margin: 0 0 8px 0;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    font-size: 1em;
+}
+.peak-stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+.stat-label { color: #333; }
+.stat-value { font-weight: bold; font-size: 1.1em; color: #000; }
+/* Celková elevace */
+.total-elevation {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #006400;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.total-elevation span {
+    display: block;
+    font-size: 1.4em;
+}
+/* Filtry */
+.filters {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: center;
+}
+.filters label {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.filters select, .filters input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+/* Graf */
+.chart-container {
+    margin-top: 15px;
+    position: relative;
+    height: 200px; 
+}
+
+/* === STYLY PRO POČÍTADLO (PATIČKA) === */
+.page-footer {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ccc;
+}
+.counter-wrapper { max-width: 800px; margin: 0 auto; }
+.counter-wrapper h3 { margin: 0 0 10px 0; text-align: center; font-size: 1em; }
+#progress-bar-background {
+    position: relative; overflow: hidden; width: 100%; height: 25px;
+    background-color: #e0e0e0; border-radius: 5px; border: 1px solid #bbb;
+    box-sizing: border-box;
+}
+#progress-bar-fill {
+    position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+    background-color: #ffd700; border-radius: 4px;
+    transition: width 0.5s ease; z-index: 1;
+}
+#progress-bar-markers {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 2;
+}
+.checkpoint-marker {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+#counter-text {
+    text-align: center; margin-top: 8px; font-weight: bold; font-size: 14px;
+}
+
+/* === STYLY PRO POPUP === */
+.popup-checkbox-container { margin-top: 10px; font-size: 14px; }
+.popup-checkbox-container hr { margin: 8px 0; border: 0; border-top: 1px solid #ccc; }
+.popup-date-container, .popup-elevation-container, .popup-photo-container { 
+    margin-top: 8px; 
+}
+.popup-date-container label, .popup-elevation-container label, .popup-photo-container label {
+    margin-right: 5px; width: 45px; display: inline-block;
+}
+.popup-date-container input[type="date"], 
+.popup-elevation-container input[type="number"],
+.popup-photo-container input[type="text"] {
+    width: 130px;
+}
+.popup-elevation-container input[type="number"]::placeholder,
+.popup-photo-container input::placeholder { 
+    font-style: italic; color: #999; 
+}
+.popup-save-button {
+    margin-top: 12px; width: 100%; padding: 6px;
+    background-color: #007bff; color: white; border: none;
+    border-radius: 4px; cursor: pointer;
+}
+.popup-save-button:hover { background-color: #0056b3; }
