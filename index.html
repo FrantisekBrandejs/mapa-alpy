@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alpská vrcholovka</title>
+    <title>Alpine Peaks</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
@@ -15,77 +15,102 @@
 
 <body>
     <header class="page-header">
-        <h1>Alpské vrcholy</h1>
-        <h2> nad 3 000 m. n. m.</h2>
+        <div class="header-content">
+            <h1>Alpine Peaks</h1>
+            <h2>with elevation > 3000 m a. s. l.</h2>
+        </div>
+        
+        <div class="app-controls">
+            <div class="theme-toggle">
+                <span>Light</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle-checkbox">
+                    <span class="slider round"></span>
+                </label>
+                <span>Dark</span>
+            </div>
+        </div>
     </header>
 
     <main class="page-main">
         
         <aside class="sidebar-left">
-            <h3>Poslední zdolané vrcholy</h3>
+            <h3>Recently Climbed Peaks</h3>
             <ul id="peak-list" class="peak-list-container">
-                <li>Žádné vrcholy zatím nebyly zdolány.</li>
+                <li>No peaks have been climbed yet.</li>
             </ul>
         </aside>
         
         <div id="mapa"></div>
 
         <aside class="sidebar-right">
-            <h3>Statistiky</h3>
+            <h3>Statistics</h3>
             
             <div class="total-elevation">
-                Celkem nastoupáno:
+                Total Elevation Gain:
                 <span id="total-elevation-sum">0 m ⬆️</span>
             </div>
 
             <div class="filters">
-                <label for="filter-country">Země:</label>
+                <label for="filter-country">Country:</label>
                 <select id="filter-country">
-                    <option value="ALL">Všechny</option>
-                    <option value="AUT">Rakousko</option>
-                    <option value="ITA">Itálie</option>
-                    <option value="CHE">Švýcarsko</option>
-                    <option value="FRA">Francie</option>
-                    <option value="DEU">Německo</option>
-                    <option value="SVN">Slovinsko</option>
+                    <option value="ALL">All</option>
+                    <option value="AUT">Austria</option>
+                    <option value="ITA">Italy</option>
+                    <option value="CHE">Switzerland</option>
+                    <option value="FRA">France</option>
+                    <option value="DEU">Germany</option>
+                    <option value="SVN">Slovenia</option>
                 </select>
                 
-                <label for="filter-date-from">Od:</label>
+                <label for="filter-date-from">From:</label>
                 <input type="date" id="filter-date-from">
                 
-                <label for="filter-date-to">Do:</label>
+                <label for="filter-date-to">To:</label>
                 <input type="date" id="filter-date-to">
             </div>
-            
+
+            <br>
+
             <div class="chart-container">
                 <canvas id="elevation-chart"></canvas>
             </div>
-            <br><br>
-            <div class="peak-stats-container">
-                <h4>Vrcholová bilance:</h4>
-                <div class="peak-stat-item">
+
+            <br>
+            <h4>Climbed Peaks (by altitude):</h4>
+            <div class="peak-stat-item">
                     <span class="stat-label">&gt; 4000 m:</span>
                     <span id="stat-count-4000" class="stat-value">0</span>
                 </div>
                 <div class="peak-stat-item">
-                    <span class="stat-label">3 000 - 3 999 m:</span>
-                    <span id="stat-count-other" class="stat-value">0</span>
+                    <span class="stat-label">3750–3999 m:</span>
+                    <span id="stat-count-3750" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3500–3749 m:</span>
+                    <span id="stat-count-3500" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3250–3499 m:</span>
+                    <span id="stat-count-3250" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3000–3249 m:</span>
+                    <span id="stat-count-3000" class="stat-value">0</span>
                 </div>
             </div>
-
         </aside>
-
     </main>
 
     <footer class="page-footer">
         <div class="counter-wrapper">
-            <h3>Postup</h3>
+            <h3>Progress</h3>
             <div id="progress-bar-background">
                 <div id="progress-bar-fill"></div>
                 <div id="progress-bar-markers"></div>
             </div>
             <div id="counter-text">
-                Zdolaných vrcholů: <span id="counter-numbers">Načítám...</span>
+                Climbed Peaks: <span id="counter-numbers">Loading...</span>
             </div>
         </div>
     </footer>
