@@ -5,7 +5,6 @@ html, body {
     padding: 0;
     font-family: sans-serif;
     overflow: hidden;
-    /* Výchozí světlé pozadí */
     background-color: #f0f0f0;
     color: #333;
     transition: background-color 0.3s, color 0.3s;
@@ -13,7 +12,7 @@ html, body {
 
 body {
     display: grid;
-    grid-template-rows: auto 1fr auto; /* Hlavička, Main (flex), Patička */
+    grid-template-rows: auto 1fr auto;
     min-height: 100vh;
 }
 
@@ -35,7 +34,6 @@ body {
     align-items: center;
     gap: 20px;
 }
-/* Styly pro přepínač tématu */
 .theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
 .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -53,16 +51,16 @@ input:checked + .slider:before { transform: translateX(20px); }
 /* Třísloupcové rozložení */
 .page-main {
     display: grid;
-    grid-template-columns: 300px 1fr 300px; /* Levo, Střed, Pravo */
+    grid-template-columns: 300px 1fr 300px;
     overflow: hidden;
 }
 
-/* === STYLY PRO LEVÝ SIDEBAR (SEZNAM) === */
+/* === LEVÝ SIDEBAR (SEZNAM) === */
 .sidebar-left {
     background-color: #fff;
     border-right: 1px solid #ccc;
     padding: 15px;
-    overflow-y: auto; /* Pouze tento panel se bude scrollovat */
+    overflow-y: auto;
     height: 100%;
     box-sizing: border-box;
     transition: background-color 0.3s, border-color 0.3s;
@@ -73,23 +71,17 @@ input:checked + .slider:before { transform: translateX(20px); }
     padding-bottom: 5px;
     transition: border-color 0.3s;
 }
-.peak-list-container {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-/* Layout pro položku v seznamu (5 řádků) */
+.peak-list-container { list-style-type: none; padding: 0; margin: 0; }
 .peak-list-container li {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     display: grid;
     grid-template-columns: 1fr auto; 
-    grid-template-rows: auto auto auto auto auto; /* 5 řádků */
+    grid-template-rows: auto auto auto auto auto;
     gap: 2px 8px; 
     align-items: center;
     transition: border-color 0.3s;
 }
-/* Řádek 1: Název (zabere oba sloupce) */
 .peak-list-name {
     font-size: 1.1em;
     font-weight: bold;
@@ -98,70 +90,36 @@ input:checked + .slider:before { transform: translateX(20px); }
     grid-row: 1 / 2;
     margin-bottom: 4px;
 }
-/* Řádek 2: Nadmořská výška (vlevo) */
-.peak-list-details {
-    color: #555;
-    font-size: 0.9em;
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-}
-/* Řádek 3: Nastoupaná elevace (vlevo, tmavě zelená) */
+.peak-list-details { color: #555; font-size: 0.9em; grid-column: 1 / 2; grid-row: 2 / 3; }
 .peak-list-elevation {
-    color: #006400; 
-    font-size: 0.9em;
-    font-weight: bold;
-    grid-column: 1 / 2;
-    grid-row: 3 / 4;
+    color: #006400; font-size: 0.9em; font-weight: bold;
+    grid-column: 1 / 2; grid-row: 3 / 4;
 }
-/* Řádek 4: Stát (vlevo) */
 .peak-list-country {
-    font-size: 0.9em;
-    color: #555;
-    grid-column: 1 / 2;
-    grid-row: 4 / 5;
-    margin-top: 5px;
+    font-size: 0.9em; color: #555; grid-column: 1 / 2;
+    grid-row: 4 / 5; margin-top: 5px;
 }
-/* Řádek 4: Datum (vpravo) */
 .peak-list-date {
-    color: #666;
-    font-size: 0.9em;
-    grid-column: 2 / 3;
-    grid-row: 4 / 5;
-    text-align: right;
-    margin-top: 5px;
+    color: #666; font-size: 0.9em; grid-column: 2 / 3;
+    grid-row: 4 / 5; text-align: right; margin-top: 5px;
 }
-/* Řádek 5: Tlačítko (vpravo) */
 .edit-peak-emoji-btn {
-    grid-column: 2 / 3; 
-    grid-row: 5 / 6;    
-    justify-self: end; 
-    background: none;
-    border: none;
-    padding: 5px; 
-    margin-top: 5px;
-    cursor: pointer;
-    font-size: 1em; /* Normální velikost tužky */
-    outline: none;
+    grid-column: 2 / 3; grid-row: 5 / 6;    
+    justify-self: end; background: none; border: none;
+    padding: 5px; margin-top: 5px; cursor: pointer;
+    font-size: 1em; outline: none;
 }
-.edit-peak-emoji-btn:hover {
-    background-color: #f0f0f0;
-    border-radius: 5px;
-}
-/* --- Konec stylů levého panelu --- */
+.edit-peak-emoji-btn:hover { background-color: #f0f0f0; border-radius: 5px; }
 
-
-/* === STYLY PRO MAPU === */
-#mapa {
-    height: 100%;
-    width: 100%;
-}
+/* === MAPA === */
+#mapa { height: 100%; width: 100%; }
 .leaflet-top.leaflet-left .leaflet-control-search {
     margin-top: 10px;
     margin-left: 10px;
 }
 .leaflet-control-search { z-index: 1001; }
 
-/* === STYLY PRO PRAVÝ SIDEBAR (GRAF) === */
+/* === PRAVÝ SIDEBAR (GRAF) === */
 .sidebar-right {
     background-color: #fff;
     border-left: 1px solid #ccc;
@@ -177,7 +135,6 @@ input:checked + .slider:before { transform: translateX(20px); }
     padding-bottom: 5px;
     transition: border-color 0.3s;
 }
-/* Statistiky 4000m */
 .peak-stats-container {
     margin-bottom: 15px;
     padding: 10px;
@@ -198,13 +155,11 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .stat-label { color: #333; }
 .stat-value { font-weight: bold; font-size: 1.1em; color: #000; }
-/* Celková elevace */
 .total-elevation {
     font-size: 1.2em; font-weight: bold; color: #006400;
     text-align: center; margin-bottom: 15px;
 }
 .total-elevation span { display: block; font-size: 1.4em; }
-/* Filtry */
 .filters {
     display: grid; grid-template-columns: auto 1fr;
     gap: 8px; align-items: center;
@@ -214,10 +169,9 @@ input:checked + .slider:before { transform: translateX(20px); }
     width: 100%; padding: 5px; box-sizing: border-box;
     background-color: #fff; color: #333; border: 1px solid #ccc;
 }
-/* Graf */
 .chart-container { margin-top: 15px; position: relative; height: 200px; }
 
-/* === STYLY PRO POČÍTADLO (PATIČKA) === */
+/* === PATIČKA (POČÍTADLO) === */
 .page-footer {
     padding: 10px;
     background-color: #f9f9f9;
@@ -248,12 +202,12 @@ input:checked + .slider:before { transform: translateX(20px); }
     text-align: center; margin-top: 8px; font-weight: bold; font-size: 14px;
 }
 
-/* === STYLY PRO POPUP === */
+/* === POPUP === */
 .popup-checkbox-container { margin-top: 10px; font-size: 14px; }
 .popup-checkbox-container hr { margin: 8px 0; border: 0; border-top: 1px solid #ccc; }
 .popup-date-container, .popup-elevation-container { margin-top: 8px; }
 .popup-date-container label, .popup-elevation-container label {
-    margin-right: 5px; width: 100px; display: inline-block; /* Zvětšeno pro "Elevation gain:" */
+    margin-right: 5px; width: 100px; display: inline-block;
 }
 .popup-date-container input[type="date"], 
 .popup-elevation-container input[type="number"] {
@@ -268,7 +222,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .popup-save-button:hover { background-color: #0056b3; }
 
-/* === STYLY PRO TRVALÝ POPIS (ZDOLÁNO) === */
+/* === TRVALÝ POPIS ZDOLANÝCH VRCHOLŮ === */
 .climbed-tooltip {
     background: none; border: none;
     box-shadow: none; padding: 0;
@@ -280,7 +234,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         -1px 1px 0 #FFF, 1px 1px 0 #FFF;
 }
 
-/* === STYLY PRO LEGENDU V MAPĚ === */
+/* === LEGENDA V MAPĚ === */
 .legend-container-map {
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.9);
@@ -293,30 +247,77 @@ input:checked + .slider:before { transform: translateX(20px); }
     text-align: center;
     font-size: 1em;
 }
-.legend-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+.legend-list { list-style: none; padding: 0; margin: 0; }
 .legend-list li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-    font-size: 0.9em;
+    display: flex; align-items: center;
+    margin-bottom: 5px; font-size: 0.9em;
 }
 .legend-color {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    margin-right: 8px;
-    border: 1px solid #777;
+    width: 15px; height: 15px; border-radius: 50%;
+    margin-right: 8px; border: 1px solid #777;
     flex-shrink: 0;
 }
-.legend-separator {
-    height: 1px;
-    background-color: #ddd;
-    margin: 8px 0;
+.legend-separator { height: 1px; background-color: #ddd; margin: 8px 0; }
+
+
+/* === STYLY PRO ALTITUDE FILTER (STATICKÝ) === */
+.leaflet-control-altitude-filter {
+    /* Vzhled jako Leaflet kontrolka */
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 10px; /* Menší padding */
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    width: 200px; /* Menší šířka */
+    margin-left: 10px;
+    margin-top: 50px; /* Pod hledacím polem */
+    z-index: 1000;
 }
+.altitude-filter-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    font-size: 0.9em;
+}
+.altitude-filter-inputs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+.altitude-filter-inputs input[type="number"] {
+    width: 48%; /* Téměř půlka */
+    padding: 4px; /* Menší */
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.altitude-filter-buttons {
+    display: flex;
+    gap: 5px;
+}
+.altitude-filter-button, .altitude-filter-reset-button {
+    flex: 1; 
+    padding: 4px; /* Menší */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+.altitude-filter-button {
+    background-color: #007bff;
+}
+.altitude-filter-button:hover {
+    background-color: #0056b3;
+}
+.altitude-filter-reset-button {
+    background-color: #6c757d;
+}
+.altitude-filter-reset-button:hover {
+    background-color: #5a6268;
+}
+/* === KONEC STYLŮ PRO FILTR === */
 
 
 /* === TMAVÝ REŽIM (DARK MODE) === */
@@ -396,6 +397,25 @@ body.dark-mode {
     background-color: #1e1e1e;
     border-color: #444;
     color: #eee;
+}
+
+/* Filtr výšky v tmavém režimu */
+.dark-mode .leaflet-control-altitude-filter {
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #eee;
+    border-color: #444;
+}
+.dark-mode .altitude-filter-inputs input[type="number"] {
+    background-color: #333;
+    color: #eee;
+    border-color: #555;
+}
+.dark-mode .altitude-filter-reset-button {
+    background-color: #444;
+    border-color: #555;
+}
+.dark-mode .altitude-filter-reset-button:hover {
+    background-color: #555;
 }
 
 /* Popup okno v tmavém režimu */
