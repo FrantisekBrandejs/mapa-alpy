@@ -93,7 +93,7 @@ function filterPeaks() {
 /**
  * Vytvoříme nový ovládací prvek Leaflet pro filtr
  */
-const altitudeFilterControl = L.control({ position: 'bottomright' });
+const altitudeFilterControl = L.control({ position: 'bottomright' }); // ZMĚNĚNÁ POZICE
 
 altitudeFilterControl.onAdd = function (map) {
     const container = L.DomUtil.create('div', 'leaflet-control-altitude-filter leaflet-bar');
@@ -142,7 +142,7 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     minZoom: 7
 });
-// Váš API klíč (zde by měl být z config.js, ale necháme ho tu pro jednoduchost)
+// Váš API klíč
 const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA'; 
 const mapyCz = L.tileLayer(`https://api.mapy.com/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${API_KEY}`, {
     minZoom: 7,
@@ -319,7 +319,7 @@ fetch('data/VrcholyAll.geojson')
         // --- INICIALIZACE VŠEHO OSTATNÍHO (Volá funkce z ui.js) ---
         initializeDashboard();
         updateCounter();
-        createCheckpoints();
+        // createCheckpoints(); // Nyní voláno z updateCounter()
         updatePeakList();
         updateDashboard(); 
     })

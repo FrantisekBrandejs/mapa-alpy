@@ -9,8 +9,6 @@
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 8px;
-    /* Výška mínus hlavička a patička (cca 160-180px) */
-    height: calc(100vh - 180px); 
     overflow-y: auto;
     box-sizing: border-box;
     transition: background-color 0.3s, border-color 0.3s;
