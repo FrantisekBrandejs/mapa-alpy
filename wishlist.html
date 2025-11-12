@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist - Alpine Peak Tracker</title>
+    
+    <link rel="stylesheet" href="styl.css" />
+    
+    <link rel="stylesheet" href="wishlist.css" />
+</head>
+
+<body class="wishlist-page">
+    
+    <header class="page-header">
+        <div class="header-content">
+            <h1>Alpine Peak Tracker</h1>
+            <h2>My Wishlist</h2> </div>
+        
+        <div class="app-controls">
+            <a href="index.html" class="header-link">Map</a>
+            
+            <div class="theme-toggle">
+                <span>Light</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle-checkbox">
+                    <span class="slider round"></span>
+                </label>
+                <span>Dark</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main">
+        
+        <h2>Add Peaks to Your List</h2>
+        <p>Search for peaks by name to add them to your wishlist. Data is saved in your browser.</p>
+
+        <div class="search-wrapper">
+            <input type="text" id="peak-search-input" placeholder="Search for a peak..." autocomplete="off">
+            <ul id="search-results"></ul>
+        </div>
+
+        <h3>My Wishlist:</h3>
+        <ul id="wishlist-container" class="wishlist-container">
+            </ul>
+        
+    </main>
+    
+    <footer class="page-footer">
+        <div class="counter-wrapper">
+            <h3>My Progress</h3>
+            <div id="progress-bar-background">
+                <div id="progress-bar-fill"></div>
+                <div id="progress-bar-markers"></div>
+            </div>
+            <div id="counter-text">
+                Climbed Peaks: <span id="counter-numbers">Loading...</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="storage.js"></script> <script src="helpers.js"></script> <script src="ui.js"></script> 
+    
+    <script src="wishlist.js"></script>
+</body>
+</html>

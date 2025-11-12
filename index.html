@@ -13,17 +13,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
+<body class="map-page">
     
     <header class="page-header">
         <div class="header-content">
             <h1>Alpine Peaks</h1>
-            <h2>with elevation > 3000 m a. s. l.</h2>
+            <h2>with elevation > 2500 m a. s. l.</h2>
         </div>
         
         <div class="app-controls">
+            
+            <a href="wishlist.html" class="header-link">Wishlist</a>
             <div class="theme-toggle">
                 <span>Light</span>
                 <label class="switch">
@@ -49,6 +49,30 @@
         <aside class="sidebar-right">
             <h3>Statistics</h3>
             
+            <div class="peak-stats-container">
+                <h4>Climbed Peaks (by altitude):</h4>
+                <div class="peak-stat-item">
+                    <span class="stat-label">&gt; 4000 m:</span>
+                    <span id="stat-count-4000" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3750–3999 m:</span>
+                    <span id="stat-count-3750" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3500–3749 m:</span>
+                    <span id="stat-count-3500" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3250–3499 m:</span>
+                    <span id="stat-count-3250" class="stat-value">0</span>
+                </div>
+                <div class="peak-stat-item">
+                    <span class="stat-label">3000–3249 m:</span>
+                    <span id="stat-count-3000" class="stat-value">0</span>
+                </div>
+            </div>
+
             <div class="total-elevation">
                 Total Elevation Gain:
                 <span id="total-elevation-sum">0 m ⬆️</span>
@@ -72,42 +96,16 @@
                 <label for="filter-date-to">To:</label>
                 <input type="date" id="filter-date-to">
             </div>
-
-            <br>
-
+            
             <div class="chart-container">
                 <canvas id="elevation-chart"></canvas>
-            </div>
-
-            <br>
-            <h4>Climbed Peaks (by altitude):</h4>
-            <div class="peak-stat-item">
-                    <span class="stat-label">&gt; 4000 m:</span>
-                    <span id="stat-count-4000" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3750–3999 m:</span>
-                    <span id="stat-count-3750" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3500–3749 m:</span>
-                    <span id="stat-count-3500" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3250–3499 m:</span>
-                    <span id="stat-count-3250" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3000–3249 m:</span>
-                    <span id="stat-count-3000" class="stat-value">0</span>
-                </div>
             </div>
         </aside>
     </main>
 
     <footer class="page-footer">
         <div class="counter-wrapper">
-            <h3>Progress</h3>
+            <h3>My Progress</h3>
             <div id="progress-bar-background">
                 <div id="progress-bar-fill"></div>
                 <div id="progress-bar-markers"></div>
@@ -121,6 +119,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
     
+    <script src="storage.js"></script>
+    <script src="helpers.js"></script>
+    <script src="ui.js"></script>
     <script src="mapa.js"></script>
 </body>
 </html>

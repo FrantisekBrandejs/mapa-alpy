@@ -1,121 +1,20 @@
-/* === SYSTÉM PRO UKLÁDÁNÍ ZDOLANÝCH VRCHOLŮ === */
-const STORAGE_KEY_DATA = 'zdolaneVrcholyData';
-const STORAGE_KEY_THEME = 'appTheme';
+/* === GLOBÁLNÍ PROMĚNNÉ PRO APLIKACI === */
 const COLOR_ZDOLANO = "#ffd700";
 let peakLayerMap = new Map();
 let totalPeakCount = 0;
-let allPeaksData = [];
-let elevationChart = null;
-let vrcholyGeoJSONLayer = null;
+let allPeaksData = []; // Všechna data z GeoJSON
+let elevationChart = null; // Proměnná pro graf
+let vrcholyGeoJSONLayer = null; // Vrstva vrcholů pro filtrování
 
-/* === FUNKCE PRO UKLÁDÁNÍ (LocalStorage) === */
-function getPeakData() {
-    const data = localStorage.getItem(STORAGE_KEY_DATA);
-    return data ? JSON.parse(data) : {};
-}
-function savePeakData(data) {
-    localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data));
-}
+/*
+ * ===============================================
+ * FUNKCE SPOJENÉ S MAPOU (Leaflet)
+ * ===============================================
+ */
 
-/* === FUNKCE PRO AKTUALIZACI UI === */
-function updateCounter() {
-    const peakData = getPeakData();
-    const zdolanocount = Object.keys(peakData).length;
-    const totalCount = totalPeakCount;
-    if (totalCount === 0) {
-        document.getElementById('counter-numbers').innerText = `0 / 0`;
-        return;
-    }
-    const percentage = (zdolanocount / totalCount) * 100;
-    const numbersEl = document.getElementById('counter-numbers');
-    const fillEl = document.getElementById('progress-bar-fill');
-    if (numbersEl) {
-        numbersEl.innerText = `${zdolanocount} / ${totalCount}`;
-    }
-    if (fillEl) {
-        fillEl.style.width = `${percentage}%`;
-    }
-}
-
-function createCheckpoints() {
-    const container = document.getElementById('progress-bar-markers');
-    if (!container || totalPeakCount === 0) return;
-    container.innerHTML = '';
-    for (let i = 100; i < totalPeakCount; i += 100) {
-        const percentage = (i / totalPeakCount) * 100;
-        const marker = document.createElement('div');
-        marker.className = 'checkpoint-marker';
-        marker.style.left = `${percentage}%`;
-        container.appendChild(marker);
-    }
-}
-
-function editPeak(peakId) {
-    if (!peakId) return;
-    const layer = peakLayerMap.get(peakId);
-    if (layer) {
-        layer.openPopup();
-    }
-}
-
-function updatePeakList() {
-    const peakData = getPeakData();
-    const listEl = document.getElementById('peak-list');
-    if (!listEl || allPeaksData.length === 0) return;
-    listEl.innerHTML = ''; 
-
-    let climbedPeaksInfo = [];
-    for (const peakId in peakData) {
-        const feature = allPeaksData.find(f => f.properties.OBJECTID == peakId);
-        if (feature) {
-            climbedPeaksInfo.push({
-                id: feature.properties.OBJECTID,
-                name: feature.properties.name,
-                ele: feature.properties.ele,
-                stat: feature.properties.stat,
-                datum: peakData[peakId].datum,
-                elevace: peakData[peakId].elevace
-            });
-        }
-    }
-
-    climbedPeaksInfo.sort((a, b) => {
-        if (a.datum && b.datum) return b.datum.localeCompare(a.datum);
-        if (a.datum && !b.datum) return -1;
-        if (!a.datum && b.datum) return 1;
-        return 0;
-    });
-
-    if (climbedPeaksInfo.length === 0) {
-        listEl.innerHTML = '<li>No peaks have been climbed yet.</li>';
-    } else {
-        for (const peak of climbedPeaksInfo) {
-            const dateStr = formatDate(peak.datum);
-            const countryName = getCountryName(peak.stat);
-            const altitudeStr = peak.ele ? `${peak.ele} m a.s.l.` : '---';
-            let elevStr = '---';
-            if (peak.elevace) {
-                elevStr = `${peak.elevace} m ⬆️`;
-            }
-
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong class="peak-list-name">${peak.name}</strong>
-                <small class="peak-list-details">${altitudeStr}</small>
-                <small class="peak-list-elevation">${elevStr}</small>
-                <span class="peak-list-country">${countryName}</span>
-                <small class="peak-list-date">${dateStr}</small>
-                <button class="edit-peak-emoji-btn" 
-                        title="Edit entry" 
-                        onclick="editPeak(${peak.id})">
-                    ✏️
-                </button>
-            `;
-            listEl.appendChild(li);
-        }
-    }
-}
-
+/**
+ * Tuto funkci bude volat "Uložit" tlačítko v popupu.
+ */
 function savePeakClimb(peakId, defaultColor) {
     if (!peakId) return;
     const checkbox = document.getElementById(`peak-${peakId}`);
@@ -125,7 +24,7 @@ function savePeakClimb(peakId, defaultColor) {
     const dateValue = dateInput.value;
     const elevValue = elevInput.value;
 
-    let allData = getPeakData();
+    let allData = getPeakData(); // Volá funkci z storage.js
     const layer = peakLayerMap.get(peakId);
     const props = layer.feature.properties; 
 
@@ -152,140 +51,15 @@ function savePeakClimb(peakId, defaultColor) {
         }
     }
     
-    savePeakData(allData);
+    savePeakData(allData); // Volá funkci z storage.js
+    
+    // Volá funkce z ui.js
     updateCounter();
     updatePeakList();
     updateDashboard();
+    
     map.closePopup();
 }
-
-function initializeDashboard() {
-    const ctx = document.getElementById('elevation-chart').getContext('2d');
-    elevationChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Elevation Gain',
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { 
-                y: { 
-                    beginAtZero: true,
-                    ticks: { color: getComputedStyle(document.body).getPropertyValue('color') }
-                },
-                x: {
-                    ticks: { color: getComputedStyle(document.body).getPropertyValue('color') }
-                }
-            }
-        }
-    });
-
-    document.getElementById('filter-country').addEventListener('change', updateDashboard);
-    document.getElementById('filter-date-from').addEventListener('change', updateDashboard);
-    document.getElementById('filter-date-to').addEventListener('change', updateDashboard);
-}
-
-function updateDashboard() {
-    const peakData = getPeakData();
-    if (allPeaksData.length === 0) return;
-
-    const filterCountry = document.getElementById('filter-country').value;
-    const filterDateFrom = document.getElementById('filter-date-from').value;
-    const filterDateTo = document.getElementById('filter-date-to').value;
-    
-    let stats = {
-        'AUT': 0, 'ITA': 0, 'CHE': 0, 'FRA': 0, 'DEU': 0, 'SVN': 0
-    };
-    let totalElevationSum = 0;
-    
-    let count4000 = 0, count3750 = 0, count3500 = 0, count3250 = 0, count3000 = 0;
-
-    for (const peakId in peakData) {
-        const feature = allPeaksData.find(f => f.properties.OBJECTID == peakId);
-        if (!feature) continue;
-        
-        const props = feature.properties;
-        const climbData = peakData[peakId];
-        
-        if (filterCountry !== 'ALL' && props.stat !== filterCountry) continue;
-        if (filterDateFrom && climbData.datum && climbData.datum < filterDateFrom) continue;
-        if (filterDateTo && climbData.datum && climbData.datum > filterDateTo) continue;
-        
-        const ele = props.ele;
-        if (ele && ele >= 4000) { count4000++; }
-        else if (ele && ele >= 3750) { count3750++; }
-        else if (ele && ele >= 3500) { count3500++; }
-        else if (ele && ele >= 3250) { count3250++; }
-        else if (ele && ele >= 3000) { count3000++; }
-        
-        const elevace = parseInt(climbData.elevace, 10) || 0;
-        if (elevace > 0) {
-            if (stats.hasOwnProperty(props.stat)) {
-                stats[props.stat] += elevace;
-            }
-        }
-        totalElevationSum += elevace;
-    }
-
-    document.getElementById('total-elevation-sum').innerText = `${totalElevationSum.toLocaleString('en-US')} m ⬆️`;
-    document.getElementById('stat-count-4000').innerText = count4000;
-    document.getElementById('stat-count-3750').innerText = count3750;
-    document.getElementById('stat-count-3500').innerText = count3500;
-    document.getElementById('stat-count-3250').innerText = count3250;
-    document.getElementById('stat-count-3000').innerText = count3000;
-    
-    if (elevationChart) {
-        let labels = [], data = [], colors = [];
-        for (const stat in stats) {
-            if (stats[stat] > 0) {
-                labels.push(stat);
-                data.push(stats[stat]);
-                colors.push(getPeakColor(stat));
-            }
-        }
-        elevationChart.data.labels = labels;
-        elevationChart.data.datasets[0].data = data;
-        elevationChart.data.datasets[0].backgroundColor = colors;
-        elevationChart.update();
-    }
-}
-/* === KONEC FUNKCÍ PRO UI === */
-
-
-/* === FUNKCE PRO NASTAVENÍ TÉMATU === */
-function setTheme(theme) {
-    localStorage.setItem(STORAGE_KEY_THEME, theme);
-    if (theme === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('theme-toggle-checkbox').checked = true;
-    } else {
-        document.body.classList.remove('dark-mode');
-        document.getElementById('theme-toggle-checkbox').checked = false;
-    }
-    
-    if (elevationChart) {
-        const newColor = (theme === 'dark') ? '#eee' : '#666';
-        elevationChart.options.scales.y.ticks.color = newColor;
-        elevationChart.options.scales.x.ticks.color = newColor;
-        elevationChart.update();
-    }
-}
-/* === KONEC FUNKCE TÉMATU === */
-
-/*
- * ===============================================
- * OVLÁDACÍ PRVEK PRO FILTR VÝŠKY (OPRAVENÝ - STATICKÝ)
- * ===============================================
- */
 
 /**
  * Filtruje vrcholy na mapě podle hodnot v input polích
@@ -294,7 +68,6 @@ function filterPeaks() {
     const minAltInput = document.getElementById('min-alt').value;
     const maxAltInput = document.getElementById('max-alt').value;
     
-    // Pokud je pole prázdné, použije 0 nebo 9999
     const minFilter = minAltInput ? parseInt(minAltInput, 10) : 0;
     const maxFilter = maxAltInput ? parseInt(maxAltInput, 10) : 9999;
 
@@ -318,17 +91,14 @@ function filterPeaks() {
 }
 
 /**
- * Vytvoříme nový ovládací prvek Leaflet
+ * Vytvoříme nový ovládací prvek Leaflet pro filtr
  */
-const altitudeFilterControl = L.control({ position: 'topleft' });
+const altitudeFilterControl = L.control({ position: 'bottomright' });
 
 altitudeFilterControl.onAdd = function (map) {
-    // 1. Vytvoříme hlavní 'div' kontejner
-    //    Dáme mu rovnou i novou třídu pro zmenšení
     const container = L.DomUtil.create('div', 'leaflet-control-altitude-filter leaflet-bar');
     L.DomEvent.disableClickPropagation(container);
 
-    // 2. Vytvoříme obsah formuláře
     const label = L.DomUtil.create('label', 'altitude-filter-label', container);
     label.innerText = 'Altitude Filter:';
 
@@ -343,29 +113,26 @@ altitudeFilterControl.onAdd = function (map) {
     maxInput.id = 'max-alt';
     maxInput.placeholder = 'Max';
     
-    // Kontejner pro tlačítka
     const buttonsDiv = L.DomUtil.create('div', 'altitude-filter-buttons', container);
     
-    // Tlačítko pro filtrování
     const filterButton = L.DomUtil.create('button', 'altitude-filter-button', buttonsDiv);
     filterButton.innerText = 'Filter';
     filterButton.onclick = filterPeaks;
     
-    // TLAČÍTKO PRO RESET
     const resetButton = L.DomUtil.create('button', 'altitude-filter-reset-button', buttonsDiv);
     resetButton.innerText = 'Reset';
     resetButton.onclick = function() {
         minInput.value = '';
         maxInput.value = '';
-        filterPeaks(); // Zavoláme filtr s prázdnými hodnotami
+        filterPeaks();
     };
 
     return container;
 };
-/* === KONEC NOVÉHO OVLÁDACÍHO PRVKU === */
+/* === KONEC OVLÁDACÍHO PRVKU FILTRU === */
 
 
-/* === HLAVNÍ LOGIKA APLIKACE === */
+/* === HLAVNÍ LOGIKA APLIKACE (Inicializace) === */
 
 // 1. Inicializace mapy
 const map = L.map('mapa');
@@ -375,7 +142,8 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     minZoom: 7
 });
-const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA';
+// Váš API klíč (zde by měl být z config.js, ale necháme ho tu pro jednoduchost)
+const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA'; 
 const mapyCz = L.tileLayer(`https://api.mapy.com/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${API_KEY}`, {
     minZoom: 7,
     attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
@@ -425,47 +193,6 @@ const overlayMaps = {
 L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 // 5. Načtení všech vašich dat
-function getPeakColor(stat) {
-    switch (stat) {
-        case 'AUT': return '#e66e6e';
-        case 'ITA': return '#74e66e';
-        case 'CHE': return '#e66ec8';
-        case 'FRA': return '#6ea7e6';
-        case 'DEU': return '#000000';
-        case 'SVN': return '#e6c36e';
-        default:    return '#808080';
-    }
-}
-function getFlagEmoji(stat) {
-    switch (stat) {
-        case 'AUT': return '🇦🇹';
-        case 'ITA': return '🇮🇹';
-        case 'CHE': return '🇨🇭';
-        case 'FRA': return '🇫🇷';
-        case 'DEU': return '🇩🇪';
-        case 'SVN': return '🇸🇮';
-        default:    return '🏴‍☠️';
-    }
-}
-function getCountryName(stat) {
-    switch (stat) {
-        case 'AUT': return 'Austria';
-        case 'ITA': return 'Italy';
-        case 'CHE': return 'Switzerland';
-        case 'FRA': return 'France';
-        case 'DEU': return 'Germany';
-        case 'SVN': return 'Slovenia';
-        default:    return 'Unknown';
-    }
-}
-function formatDate(isoDate) {
-    if (!isoDate || isoDate === "") { return '---'; }
-    const parts = isoDate.split('-');
-    if (parts.length !== 3) return isoDate;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-}
-
-
 // Načtení vrstvy vrcholů s popupy
 fetch('data/VrcholyAll.geojson')
     .then(response => response.json())
@@ -473,7 +200,7 @@ fetch('data/VrcholyAll.geojson')
         
         allPeaksData = data.features;
         totalPeakCount = data.features.length; 
-        const peakData = getPeakData();
+        const peakData = getPeakData(); // Volá storage.js
 
         let minEle = 9999;
         let maxEle = 0;
@@ -491,7 +218,7 @@ fetch('data/VrcholyAll.geojson')
             pointToLayer: function (feature, latlng) {
                 const peakId = feature.properties.OBJECTID;
                 const isZdolano = peakData.hasOwnProperty(peakId);
-                const defaultColor = getPeakColor(feature.properties.stat);
+                const defaultColor = getPeakColor(feature.properties.stat); // Volá helpers.js
                 return L.circleMarker(latlng, {
                     radius: 5,
                     fillColor: isZdolano ? COLOR_ZDOLANO : defaultColor,
@@ -515,7 +242,7 @@ fetch('data/VrcholyAll.geojson')
                 }
                 peakLayerMap.set(peakId, layer);
 
-                const allData = getPeakData();
+                const allData = getPeakData(); // Volá storage.js
                 const isZdolano = allData.hasOwnProperty(peakId);
                 if (isZdolano) {
                     layer.bindTooltip(`<span class="climbed-label">${props.name} ✅</span>`, {
@@ -527,8 +254,8 @@ fetch('data/VrcholyAll.geojson')
                 }
 
                 layer.bindPopup(function () {
-                    const defaultColor = getPeakColor(props.stat);
-                    const currentData = getPeakData();
+                    const defaultColor = getPeakColor(props.stat); // Volá helpers.js
+                    const currentData = getPeakData(); // Volá storage.js
                     const peakInfo = currentData[peakId];
                     const isChecked = !!peakInfo;
                     const dateValue = (peakInfo && peakInfo.datum) ? peakInfo.datum : "";
@@ -589,7 +316,7 @@ fetch('data/VrcholyAll.geojson')
         document.getElementById('max-alt').placeholder = maxEle;
         // ---------------------------------
 
-        // --- INICIALIZACE VŠEHO OSTATNÍHO ---
+        // --- INICIALIZACE VŠEHO OSTATNÍHO (Volá funkce z ui.js) ---
         initializeDashboard();
         updateCounter();
         createCheckpoints();
@@ -648,8 +375,8 @@ legend.addTo(map);
 /* === SPOUŠTĚCÍ KÓD PRO TÉMA === */
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('theme-toggle-checkbox').addEventListener('change', (e) => {
-        setTheme(e.target.checked ? 'dark' : 'light');
+        setTheme(e.target.checked ? 'dark' : 'light'); // Volá funkci z ui.js
     });
     const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
-    setTheme(savedTheme);
+    setTheme(savedTheme); // Volá funkci z ui.js
 });

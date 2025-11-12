@@ -34,6 +34,20 @@ body {
     align-items: center;
     gap: 20px;
 }
+
+/* ODKAZ V HLAVIČCE */
+.header-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #007bff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+.header-link:hover { 
+    background-color: #f0f0f0;
+}
+
 .theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
 .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -48,10 +62,10 @@ body {
 input:checked + .slider { background-color: #007bff; }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* Třísloupcové rozložení */
-.page-main {
+/* === ROZLOŽENÍ POUZE PRO STRÁNKU S MAPOU === */
+.map-page .page-main {
     display: grid;
-    grid-template-columns: 300px 1fr 300px;
+    grid-template-columns: 300px 1fr 300px; /* Tři sloupce */
     overflow: hidden;
 }
 
@@ -259,18 +273,16 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .legend-separator { height: 1px; background-color: #ddd; margin: 8px 0; }
 
-
-/* === STYLY PRO ALTITUDE FILTER (STATICKÝ) === */
+/* === FILTR VÝŠKY V MAPĚ === */
 .leaflet-control-altitude-filter {
-    /* Vzhled jako Leaflet kontrolka */
     background: rgba(255, 255, 255, 0.9);
-    padding: 8px 10px; /* Menší padding */
+    padding: 8px 10px;
     border-radius: 5px;
     box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-    width: 200px; /* Menší šířka */
-    margin-left: 10px;
-    margin-top: 50px; /* Pod hledacím polem */
-    z-index: 1000;
+    width: 200px;
+    /* NOVÁ POZICE */
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 .altitude-filter-label {
     font-weight: bold;
@@ -286,8 +298,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     margin-bottom: 8px;
 }
 .altitude-filter-inputs input[type="number"] {
-    width: 48%; /* Téměř půlka */
-    padding: 4px; /* Menší */
+    width: 48%;
+    padding: 4px;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -298,26 +310,17 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .altitude-filter-button, .altitude-filter-reset-button {
     flex: 1; 
-    padding: 4px; /* Menší */
+    padding: 4px;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
 }
-.altitude-filter-button {
-    background-color: #007bff;
-}
-.altitude-filter-button:hover {
-    background-color: #0056b3;
-}
-.altitude-filter-reset-button {
-    background-color: #6c757d;
-}
-.altitude-filter-reset-button:hover {
-    background-color: #5a6268;
-}
-/* === KONEC STYLŮ PRO FILTR === */
+.altitude-filter-button { background-color: #007bff; }
+.altitude-filter-button:hover { background-color: #0056b3; }
+.altitude-filter-reset-button { background-color: #6c757d; }
+.altitude-filter-reset-button:hover { background-color: #5a6268; }
 
 
 /* === TMAVÝ REŽIM (DARK MODE) === */
@@ -434,4 +437,12 @@ body.dark-mode {
 }
 .dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
+}
+
+/* Odkaz v hlavičce (Tmavý režim) */
+.dark-mode .header-link { 
+    color: #58a6ff; 
+}
+.dark-mode .header-link:hover { 
+    background-color: #333; 
 }
