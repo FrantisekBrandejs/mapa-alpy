@@ -1,138 +1,6 @@
-/* === GLOBÁLNÍ PROMĚNNÉ PRO APLIKACI === */
-const COLOR_ZDOLANO = "#ffd700";
-let peakLayerMap = new Map();
-let totalPeakCount = 0;
-let allPeaksData = []; // Všechna data z GeoJSON
-let elevationChart = null; // Proměnná pro graf
-let vrcholyGeoJSONLayer = null; // Vrstva vrcholů pro filtrování
-
-/*
- * ===============================================
- * FUNKCE SPOJENÉ S MAPOU (Leaflet)
- * ===============================================
+/* * HLAVNÍ LOGIKA MAPY 
+ * (Pomocné funkce jsou v helpers.js, ui.js a storage.js)
  */
-
-/**
- * Tuto funkci bude volat "Uložit" tlačítko v popupu.
- */
-function savePeakClimb(peakId, defaultColor) {
-    if (!peakId) return;
-    const checkbox = document.getElementById(`peak-${peakId}`);
-    const dateInput = document.getElementById(`date-${peakId}`);
-    const elevInput = document.getElementById(`elev-${peakId}`);
-    const isChecked = checkbox.checked;
-    const dateValue = dateInput.value;
-    const elevValue = elevInput.value;
-
-    let allData = getPeakData(); // Volá funkci z storage.js
-    const layer = peakLayerMap.get(peakId);
-    const props = layer.feature.properties; 
-
-    layer.unbindTooltip();
-
-    if (isChecked) {
-        allData[peakId] = { 
-            datum: dateValue || null,
-            elevace: elevValue || null
-        };
-        if (layer) {
-            layer.setStyle({ fillColor: COLOR_ZDOLANO });
-            layer.bindTooltip(`<span class="climbed-label">${props.name} ✅</span>`, {
-                permanent: true,
-                className: 'climbed-tooltip',
-                direction: 'top',
-                offset: [0, -10]
-            });
-        }
-    } else {
-        delete allData[peakId];
-        if (layer) {
-            layer.setStyle({ fillColor: defaultColor });
-        }
-    }
-    
-    savePeakData(allData); // Volá funkci z storage.js
-    
-    // Volá funkce z ui.js
-    updateCounter();
-    updatePeakList();
-    updateDashboard();
-    
-    map.closePopup();
-}
-
-/**
- * Filtruje vrcholy na mapě podle hodnot v input polích
- */
-function filterPeaks() {
-    const minAltInput = document.getElementById('min-alt').value;
-    const maxAltInput = document.getElementById('max-alt').value;
-    
-    const minFilter = minAltInput ? parseInt(minAltInput, 10) : 0;
-    const maxFilter = maxAltInput ? parseInt(maxAltInput, 10) : 9999;
-
-    if (!vrcholyGeoJSONLayer) return;
-
-    vrcholyGeoJSONLayer.eachLayer((layer) => {
-        const ele = layer.feature.properties.ele;
-
-        if (ele >= minFilter && ele <= maxFilter) {
-            layer.setStyle({ opacity: 1, fillOpacity: 0.8 });
-            if (layer.getTooltip() && layer.getTooltip()._container) {
-                layer.getTooltip()._container.style.display = 'block';
-            }
-        } else {
-            layer.setStyle({ opacity: 0, fillOpacity: 0 });
-            if (layer.getTooltip() && layer.getTooltip()._container) {
-                layer.getTooltip()._container.style.display = 'none';
-            }
-        }
-    });
-}
-
-/**
- * Vytvoříme nový ovládací prvek Leaflet pro filtr
- */
-const altitudeFilterControl = L.control({ position: 'bottomright' }); // ZMĚNĚNÁ POZICE
-
-altitudeFilterControl.onAdd = function (map) {
-    const container = L.DomUtil.create('div', 'leaflet-control-altitude-filter leaflet-bar');
-    L.DomEvent.disableClickPropagation(container);
-
-    const label = L.DomUtil.create('label', 'altitude-filter-label', container);
-    label.innerText = 'Altitude Filter:';
-
-    const inputsDiv = L.DomUtil.create('div', 'altitude-filter-inputs', container);
-    const minInput = L.DomUtil.create('input', '', inputsDiv);
-    minInput.type = 'number';
-    minInput.id = 'min-alt';
-    minInput.placeholder = 'Min';
-
-    const maxInput = L.DomUtil.create('input', '', inputsDiv);
-    maxInput.type = 'number';
-    maxInput.id = 'max-alt';
-    maxInput.placeholder = 'Max';
-    
-    const buttonsDiv = L.DomUtil.create('div', 'altitude-filter-buttons', container);
-    
-    const filterButton = L.DomUtil.create('button', 'altitude-filter-button', buttonsDiv);
-    filterButton.innerText = 'Filter';
-    filterButton.onclick = filterPeaks;
-    
-    const resetButton = L.DomUtil.create('button', 'altitude-filter-reset-button', buttonsDiv);
-    resetButton.innerText = 'Reset';
-    resetButton.onclick = function() {
-        minInput.value = '';
-        maxInput.value = '';
-        filterPeaks();
-    };
-
-    return container;
-};
-/* === KONEC OVLÁDACÍHO PRVKU FILTRU === */
-
-
-/* === HLAVNÍ LOGIKA APLIKACE (Inicializace) === */
 
 // 1. Inicializace mapy
 const map = L.map('mapa');
@@ -142,66 +10,46 @@ const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     minZoom: 7
 });
-// Váš API klíč
-const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA'; 
+const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA';
 const mapyCz = L.tileLayer(`https://api.mapy.com/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${API_KEY}`, {
-    minZoom: 7,
-    attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
+    minZoom: 7, attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
 });
 const mapyCzWinter = L.tileLayer(`https://api.mapy.com/v1/maptiles/winter/256/{z}/{x}/{y}?apikey=${API_KEY}`, {
-    minZoom: 7,
-    attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
+    minZoom: 7, attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
 });
 const mapyCzAerial = L.tileLayer(`https://api.mapy.com/v1/maptiles/aerial/256/{z}/{x}/{y}?apikey=${API_KEY}`, {
-    minZoom: 7,
-    attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
-});
-const Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    minZoom: 7
+    minZoom: 7, attribution: '<a href="https://api.mapy.com/copyright" target="_blank">&copy; Seznam.cz a.s. a další</a>',
 });
 osm.addTo(map);
 
-// 3. Příprava "krabiček" (Layer Groups)
+// 3. Skupiny vrstev
 const vrcholyGroup = L.layerGroup();
 const perimeterGroup = L.layerGroup();
-const autGroup = L.layerGroup();
-const itaGroup = L.layerGroup();
-const cheGroup = L.layerGroup();
-const fraGroup = L.layerGroup();
-const deuGroup = L.layerGroup();
-const svnGroup = L.layerGroup();
 
-// 4. Vytvoření ovládacího panelu
+// 4. Ovládací panel vrstev
 const baseMaps = {
-    "OpenStreetMap": osm,
-    "Mapy.cz": mapyCz,
-    "Esri World Imagery": Esri_WorldImagery,
-    "Mapy.cz Winter": mapyCzWinter,
-    "Mapy.cz Aerial": mapyCzAerial
+    "Basic": osm,
+    "Touristic": mapyCz,
+    "Winter": mapyCzWinter,
+    "Aerial": mapyCzAerial
 };
 const overlayMaps = {
-    "🏔️ Alpine Peaks": vrcholyGroup,
-    "📍 Alpine Perimeter": perimeterGroup,
-    "🇦🇹 Austria": autGroup,
-    "🇮🇹 Italy": itaGroup,
-    "🇨🇭 Switzerland": cheGroup,
-    "🇫🇷 France": fraGroup,
-    "🇩🇪 Germany": deuGroup,
-    "🇸🇮 Slovenia": svnGroup
+    "Alpine Peaks": vrcholyGroup,
+    "Alpine Perimeter": perimeterGroup,
 };
 L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-// 5. Načtení všech vašich dat
-// Načtení vrstvy vrcholů s popupy
+// 5. Načtení VRCHOLŮ
 fetch('data/VrcholyAll.geojson')
     .then(response => response.json())
     .then(data => {
         
+        // Inicializace globálních proměnných
         allPeaksData = data.features;
         totalPeakCount = data.features.length; 
-        const peakData = getPeakData(); // Volá storage.js
+        const peakData = getPeakData(); // ze storage.js
 
+        // Zjištění min/max pro filtr
         let minEle = 9999;
         let maxEle = 0;
         allPeaksData.forEach(f => {
@@ -214,16 +62,17 @@ fetch('data/VrcholyAll.geojson')
         minEle = Math.floor(minEle / 100) * 100;
         maxEle = Math.ceil(maxEle / 100) * 100;
 
+        // Vytvoření vrstvy
         vrcholyGeoJSONLayer = L.geoJSON(data, {
             pointToLayer: function (feature, latlng) {
                 const peakId = feature.properties.OBJECTID;
                 const isZdolano = peakData.hasOwnProperty(peakId);
-                const defaultColor = getPeakColor(feature.properties.stat); // Volá helpers.js
+                const defaultColor = getPeakColor(feature.properties.stat) || '#808080'; // z helpers.js
                 return L.circleMarker(latlng, {
-                    radius: 5,
+                    radius: 3,
                     fillColor: isZdolano ? COLOR_ZDOLANO : defaultColor,
                     color: "#000",
-                    weight: 1,
+                    weight: 0.5,
                     opacity: 1,
                     fillOpacity: 0.8,
                     pane: 'markerPane'
@@ -233,38 +82,29 @@ fetch('data/VrcholyAll.geojson')
             onEachFeature: function (feature, layer) {
                 const peakId = feature.properties.OBJECTID;
                 const props = feature.properties;
-                if (!peakId) {
-                    let simplePopup = `<strong>${props.name || 'Peak without name'}</strong>`;
-                    if (props.ele) simplePopup += `<br>${props.ele} m a.s.l.`;
-                    simplePopup += `<div class="popup-checkbox-container"><em>(This peak cannot be saved - missing ID)</em></div>`;
-                    layer.bindPopup(simplePopup);
-                    return;
-                }
+                if (!peakId) return;
+
                 peakLayerMap.set(peakId, layer);
 
-                const allData = getPeakData(); // Volá storage.js
-                const isZdolano = allData.hasOwnProperty(peakId);
-                if (isZdolano) {
+                // Trvalý popisek pokud je zdoláno
+                if (peakData.hasOwnProperty(peakId)) {
                     layer.bindTooltip(`<span class="climbed-label">${props.name} ✅</span>`, {
-                        permanent: true,
-                        className: 'climbed-tooltip',
-                        direction: 'top',
-                        offset: [0, -10]
+                        permanent: true, className: 'climbed-tooltip', direction: 'top', offset: [0, -10]
                     });
                 }
 
+                // Popup na kliknutí
                 layer.bindPopup(function () {
-                    const defaultColor = getPeakColor(props.stat); // Volá helpers.js
-                    const currentData = getPeakData(); // Volá storage.js
+                    const defaultColor = getPeakColor(props.stat) || '#808080';
+                    const currentData = getPeakData();
                     const peakInfo = currentData[peakId];
                     const isChecked = !!peakInfo;
                     const dateValue = (peakInfo && peakInfo.datum) ? peakInfo.datum : "";
                     const elevValue = (peakInfo && peakInfo.elevace) ? peakInfo.elevace : "";
 
-                    let popupText = `<strong>${props.name || 'Peak without name'}</strong>`;
-                    if (props.ele) {
-                        popupText += `<br>${props.ele} m a.s.l.`;
-                    }
+                    let popupText = `<strong>${props.name || 'Peak'}</strong>`;
+                    if (props.ele) popupText += `<br>${props.ele} m a.s.l.`;
+                    
                     popupText += `
                         <div class="popup-checkbox-container">
                             <hr>
@@ -294,77 +134,144 @@ fetch('data/VrcholyAll.geojson')
         vrcholyGeoJSONLayer.addTo(vrcholyGroup);
         vrcholyGroup.addTo(map);
 
-        // --- PŘIDÁNÍ HLEDACÍHO POLE ---
+        // Hledání (Leaflet-Search)
         const searchControl = new L.Control.Search({
             layer: vrcholyGeoJSONLayer, 
             propertyName: 'name',
             marker: false,
             initial: false,
             textPlaceholder: 'Search for a peak...',
-            moveToLocation: function(latlng, title, map) {
-                map.setView(latlng, 14); 
-            }
+            moveToLocation: function(latlng, title, map) { map.setView(latlng, 14); }
         });
-        searchControl.on('search:locationfound', function(e) {
-            e.layer.openPopup();
-        });
+        searchControl.on('search:locationfound', function(e) { e.layer.openPopup(); });
         map.addControl(searchControl);
         
-        // --- PŘIDÁNÍ NOVÉHO FILTRU VÝŠKY ---
+        // Filtr výšky (Nový ovládací prvek)
         altitudeFilterControl.addTo(map);
-        document.getElementById('min-alt').placeholder = minEle;
-        document.getElementById('max-alt').placeholder = maxEle;
-        // ---------------------------------
+        if(document.getElementById('min-alt')) document.getElementById('min-alt').placeholder = minEle;
+        if(document.getElementById('max-alt')) document.getElementById('max-alt').placeholder = maxEle;
 
-        // --- INICIALIZACE VŠEHO OSTATNÍHO (Volá funkce z ui.js) ---
+        // Inicializace UI (funkce z ui.js)
         initializeDashboard();
         updateCounter();
-        // createCheckpoints(); // Nyní voláno z updateCounter()
+        // createCheckpoints(); // (voláno z updateCounter)
         updatePeakList();
         updateDashboard(); 
     })
     .catch(err => console.error('Error loading VrcholyAll.geojson:', err));
 
-// Načtení Perimetru Alp
-fetch('data/Alpine_Convention_Perimeter_2025.geojson')
-    .then(response => response.json())
-    .then(data => {
-        const perimeterLayer = L.geoJSON(data, {
-            style: { color: "#ca6ee6", weight: 2, fillOpacity: 0, interactive: false }
-        });
-        const alpsBounds = perimeterLayer.getBounds();
-        map.fitBounds(alpsBounds);
-        map.setMaxBounds(alpsBounds.pad(0.1)); 
-        perimeterLayer.addTo(perimeterGroup);
-        perimeterGroup.addTo(map);
-    })
-    .catch(err => console.error('Error loading Alpine_Convention_Perimeter_2025.geojson:', err));
+/* === FUNKCE PRO ULOŽENÍ (Most mezi UI a Mapou) === */
+// Tuto funkci necháváme zde, protože pracuje přímo s mapou (barvy, tooltips)
+function savePeakClimb(peakId, defaultColor) {
+    if (!peakId) return;
+    const checkbox = document.getElementById(`peak-${peakId}`);
+    const dateInput = document.getElementById(`date-${peakId}`);
+    const elevInput = document.getElementById(`elev-${peakId}`);
+    const isChecked = checkbox.checked;
+    const dateValue = dateInput.value;
+    const elevValue = elevInput.value;
 
-// Načtení GADM hranic
-const hraniceStyle = { weight: 2, fillOpacity: 0, interactive: false };
-fetch('data/gadm41_AUT_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#e66e6e" } }).addTo(autGroup));
-fetch('data/gadm41_ITA_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#74e66e" } }).addTo(itaGroup));
-fetch('data/gadm41_CHE_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#6e77e6" } }).addTo(cheGroup));
-fetch('data/gadm41_FRA_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#6ea7e6" } }).addTo(fraGroup));
-fetch('data/gadm41_DEU_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#000000" } }).addTo(deuGroup));
-fetch('data/gadm41_SVN_0.json').then(r => r.json()).then(d => L.geoJSON(d, { style: { ...hraniceStyle, color: "#e6c36e" } }).addTo(svnGroup));
+    let allData = getPeakData(); // ze storage.js
+    const layer = peakLayerMap.get(peakId);
+    const props = layer.feature.properties; 
 
-/* === PŘIDÁNÍ LEGENDY DO MAPY === */
+    layer.unbindTooltip();
+
+    if (isChecked) {
+        allData[peakId] = { 
+            datum: dateValue || null,
+            elevace: elevValue || null
+        };
+        if (layer) {
+            layer.setStyle({ fillColor: COLOR_ZDOLANO });
+            layer.bindTooltip(`<span class="climbed-label">${props.name} ✅</span>`, {
+                permanent: true, className: 'climbed-tooltip', direction: 'top', offset: [0, -10]
+            });
+        }
+    } else {
+        delete allData[peakId];
+        if (layer) {
+            layer.setStyle({ fillColor: defaultColor });
+        }
+    }
+    
+    savePeakData(allData); // do storage.js
+    updateCounter(); // z ui.js
+    updatePeakList(); // z ui.js
+    updateDashboard(); // z ui.js
+    map.closePopup();
+}
+
+// Funkce pro filtr výšky (používá mapové vrstvy)
+function filterPeaks() {
+    const minAltInput = document.getElementById('min-alt').value;
+    const maxAltInput = document.getElementById('max-alt').value;
+    const minFilter = minAltInput ? parseInt(minAltInput, 10) : 0;
+    const maxFilter = maxAltInput ? parseInt(maxAltInput, 10) : 9999;
+
+    if (!vrcholyGeoJSONLayer) return;
+
+    vrcholyGeoJSONLayer.eachLayer((layer) => {
+        const ele = layer.feature.properties.ele;
+        if (ele >= minFilter && ele <= maxFilter) {
+            layer.setStyle({ opacity: 1, fillOpacity: 0.8 });
+            if (layer.getTooltip() && layer.getTooltip()._container) {
+                layer.getTooltip()._container.style.display = 'block';
+            }
+        } else {
+            layer.setStyle({ opacity: 0, fillOpacity: 0 });
+            if (layer.getTooltip() && layer.getTooltip()._container) {
+                layer.getTooltip()._container.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Ovládací prvek filtru
+const altitudeFilterControl = L.control({ position: 'bottomright' });
+altitudeFilterControl.onAdd = function (map) {
+    const container = L.DomUtil.create('div', 'leaflet-control-altitude-filter leaflet-bar');
+    L.DomEvent.disableClickPropagation(container);
+    const label = L.DomUtil.create('label', 'altitude-filter-label', container);
+    label.innerText = 'Altitude Filter:';
+    const inputsDiv = L.DomUtil.create('div', 'altitude-filter-inputs', container);
+    const minInput = L.DomUtil.create('input', '', inputsDiv);
+    minInput.type = 'number'; minInput.id = 'min-alt'; minInput.placeholder = 'Min';
+    const maxInput = L.DomUtil.create('input', '', inputsDiv);
+    maxInput.type = 'number'; maxInput.id = 'max-alt'; maxInput.placeholder = 'Max';
+    const buttonsDiv = L.DomUtil.create('div', 'altitude-filter-buttons', container);
+    const filterButton = L.DomUtil.create('button', 'altitude-filter-button', buttonsDiv);
+    filterButton.innerText = 'Filter'; filterButton.onclick = filterPeaks;
+    const resetButton = L.DomUtil.create('button', 'altitude-filter-reset-button', buttonsDiv);
+    resetButton.innerText = 'Reset';
+    resetButton.onclick = function() { minInput.value = ''; maxInput.value = ''; filterPeaks(); };
+    return container;
+};
+
+
+/* === OSTATNÍ VRSTVY (Perimetr a Hranice) === */
+fetch('data/Alpine_Convention_Perimeter_2025.geojson').then(r => r.json()).then(d => {
+    const layer = L.geoJSON(d, { style: { color: "#BC40ED", weight: 3, fillOpacity: 0, interactive: false } });
+    map.fitBounds(layer.getBounds()); map.setMaxBounds(layer.getBounds().pad(0.1));
+    layer.addTo(perimeterGroup); perimeterGroup.addTo(map);
+}).catch(e => console.error(e));
+
+
+/* === LEGENDA === */
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
     const div = L.DomUtil.create('div', 'legend-container-map');
     div.innerHTML = `
         <h4>Peak Color Legend:</h4>
         <ul class="legend-list">
-            <li><span class="legend-color" style="background-color: #e66e6e;"></span> Austria</li>
-            <li><span class="legend-color" style="background-color: #74e66e;"></span> Italy</li>
-            <li><span class="legend-color" style="background-color: #e66ec8;"></span> Switzerland</li>
-            <li><span class="legend-color" style="background-color: #6ea7e6;"></span> France</li>
-            <li><span class="legend-color" style="background-color: #000000;"></span> Germany</li>
-            <li><span class="legend-color" style="background-color: #e6c36e;"></span> Slovenia</li>
-            <li><span class="legend-color" style="background-color: #808080;"></span> Other</li>
+            <li><span class="legend-color" style="background-color: #FE8B9E;"></span> Austria</li>
+            <li><span class="legend-color" style="background-color: #83D897;"></span> Italy</li>
+            <li><span class="legend-color" style="background-color: #EC9CD2;"></span> Switzerland</li>
+            <li><span class="legend-color" style="background-color: #7681E5;"></span> France</li>
+            <li><span class="legend-color" style="background-color: #F9ED62;"></span> Germany</li>
+            <li><span class="legend-color" style="background-color: #A8FD5D;"></span> Slovenia</li>
             <li class="legend-separator"></li>
-            <li><span class="legend-color" style="background-color: #ffd700;"></span> Climbed</li>
+            <li><span class="legend-color" style="background-color: #9BEEEE;"></span> Climbed</li>
         </ul>
     `;
     L.DomEvent.disableClickPropagation(div);
@@ -372,11 +279,11 @@ legend.onAdd = function (map) {
 };
 legend.addTo(map);
 
-/* === SPOUŠTĚCÍ KÓD PRO TÉMA === */
+/* === INIT TÉMA === */
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('theme-toggle-checkbox').addEventListener('change', (e) => {
-        setTheme(e.target.checked ? 'dark' : 'light'); // Volá funkci z ui.js
+        setTheme(e.target.checked ? 'dark' : 'light');
     });
     const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
-    setTheme(savedTheme); // Volá funkci z ui.js
+    setTheme(savedTheme);
 });

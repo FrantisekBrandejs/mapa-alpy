@@ -21,6 +21,7 @@ body.map-page {
     overflow: hidden;
 }
 /* === HLAVIČKA A PŘEPÍNAČE === */
+/* === HLAVIČKA (S EXTERNÍM LOGEM) === */
 .page-header {
     padding: 0 20px;
     background-color: #fff;
@@ -28,11 +29,35 @@ body.map-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 120px; /* Fixní výška hlavičky */
     transition: background-color 0.3s, border-color 0.3s;
 }
-.page-header h1 { margin: 10px 0 5px 0; }
-.page-header h2 { margin: 5px 0 10px 0; font-size: 1.1em; font-weight: normal; color: #555; }
 
+/* Odkaz kolem loga */
+.logo-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+}
+
+/* Samotný obrázek loga */
+.logo-img {
+    height: 150px; /* Nastaví výšku, šířka se dopočítá */
+    width: auto;
+    margin-top: 20px; /* Jemné vycentrování */
+    display: block;
+    transition: filter 0.3s; /* Plynulý přechod barev */
+}
+
+/* === TMAVÝ REŽIM PRO LOGO === */
+/* Zde používáme trik: invertujeme barvy obrázku.
+Černá (#333) se změní na světle šedou/bílou.
+Zlatá (#ffd700) se změní na modrou, což nechceme, 
+proto použijeme 'hue-rotate', abychom barvu vrátili zpět k teplým tónům.
+*/
+.dark-mode .logo-img {
+    filter: invert(1) hue-rotate(180deg);
+}
 .app-controls {
     display: flex;
     align-items: center;

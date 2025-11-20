@@ -17,12 +17,12 @@
     
     <header class="page-header">
         <div class="header-content">
-            <h1>Alpine Peaks</h1>
-            <h2>with elevation > 2500 m a. s. l.</h2>
+            <a href="index.html" class="logo-link">
+                <img src="logo.svg" alt="Alpine Peaks Logo" class="logo-img">
+            </a>
         </div>
         
         <div class="app-controls">
-            
             <a href="wishlist.html" class="header-link">Wishlist</a>
             <div class="theme-toggle">
                 <span>Light</span>
@@ -51,25 +51,22 @@
             
             <div class="peak-stats-container">
                 <h4>Climbed Peaks (by altitude):</h4>
+                
                 <div class="peak-stat-item">
                     <span class="stat-label">&gt; 4000 m:</span>
                     <span id="stat-count-4000" class="stat-value">0</span>
                 </div>
                 <div class="peak-stat-item">
-                    <span class="stat-label">3750–3999 m:</span>
-                    <span id="stat-count-3750" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3500–3749 m:</span>
+                    <span class="stat-label">3500 – 3999 m:</span>
                     <span id="stat-count-3500" class="stat-value">0</span>
                 </div>
                 <div class="peak-stat-item">
-                    <span class="stat-label">3250–3499 m:</span>
-                    <span id="stat-count-3250" class="stat-value">0</span>
+                    <span class="stat-label">3000 – 3499 m:</span>
+                    <span id="stat-count-3000" class="stat-value">0</span>
                 </div>
                 <div class="peak-stat-item">
-                    <span class="stat-label">3000–3249 m:</span>
-                    <span id="stat-count-3000" class="stat-value">0</span>
+                    <span class="stat-label">2500 – 2999 m:</span>
+                    <span id="stat-count-2500" class="stat-value">0</span>
                 </div>
             </div>
 
@@ -118,7 +115,6 @@
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
-    
     <script src="storage.js"></script>
     <script src="helpers.js"></script>
     <script src="ui.js"></script>

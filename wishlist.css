@@ -113,3 +113,55 @@
 .dark-mode .wishlist-item-info small { 
     color: #bbb; 
 }
+/* === SPRÁVA DAT (ZÁLOHA) === */
+.data-management-wrapper {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+}
+.data-management-wrapper h3 {
+    margin-top: 0;
+}
+.data-management-wrapper p {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.data-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.data-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+.data-btn:hover {
+    opacity: 0.9;
+}
+
+/* Barvy tlačítek */
+.export-btn {
+    background-color: #28a745; /* Zelená */
+    color: white;
+}
+.import-btn {
+    background-color: #ffc107; /* Žlutá/Oranžová */
+    color: #333;
+}
+
+/* Tmavý režim */
+.dark-mode .data-management-wrapper {
+    border-top-color: #444;
+}
+.dark-mode .data-management-wrapper p {
+    color: #bbb;
+}

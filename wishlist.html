@@ -14,8 +14,10 @@
     
     <header class="page-header">
         <div class="header-content">
-            <h1>Alpine Peak Tracker</h1>
-            <h2>My Wishlist</h2> </div>
+            <a href="index.html" class="logo-link">
+                <img src="logo.svg" alt="Alpine Peaks Logo" class="logo-img">
+            </a>
+        </div>
         
         <div class="app-controls">
             <a href="index.html" class="header-link">Map</a>
@@ -44,7 +46,23 @@
         <h3>My Wishlist:</h3>
         <ul id="wishlist-container" class="wishlist-container">
             </ul>
-        
+
+        <div class="data-management-wrapper">
+            <h3>Data save</h3>
+            <p>DOWNLOAD your progress & wishlist and UPLOAD it to another device!</p>
+            
+            <div class="data-buttons">
+                <button id="btn-export" class="data-btn export-btn">
+                    💾 Stáhnout zálohu
+                </button>
+
+                <button id="btn-import-trigger" class="data-btn import-btn">
+                    📂 Nahrát zálohu
+                </button>
+                
+                <input type="file" id="file-import" style="display: none;" accept=".json,.txt">
+            </div>
+        </div>
     </main>
     
     <footer class="page-footer">

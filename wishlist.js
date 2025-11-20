@@ -5,18 +5,14 @@ const resultsContainer = document.getElementById('search-results');
 const listContainer = document.getElementById('wishlist-container');
 const themeToggle = document.getElementById('theme-toggle-checkbox');
 
-// Tyto proměnné musíme definovat
-let elevationChart = null; 
-let totalPeakCount = 0; // Pro funkci updateCounter()
-
 /* === LOGIKA TÉMATU === */
 if (themeToggle) {
     themeToggle.addEventListener('change', (e) => {
-        setTheme(e.target.checked ? 'dark' : 'light'); // Volá funkci z ui.js
+        setTheme(e.target.checked ? 'dark' : 'light'); 
     });
 }
 const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
-setTheme(savedTheme); // Volá funkci z ui.js
+setTheme(savedTheme); 
 /* === KONEC LOGIKY TÉMATU === */
 
 
@@ -30,13 +26,21 @@ function renderWishlist() {
         listContainer.innerHTML = '<li>Your wishlist is empty. Add peaks using the search bar.</li>';
     } else {
         for (const peakId of wishlistIDs) {
+            // Najdeme vrchol v načtených datech
             const feature = allPeaks.find(f => f.properties.OBJECTID == peakId);
+            
             if (feature) {
                 const props = feature.properties;
+                
+                // Zjistíme, jestli je už zdolán (pro vizuální indikaci v seznamu)
+                const peakData = getPeakData();
+                const isClimbed = peakData.hasOwnProperty(peakId);
+                const statusIcon = isClimbed ? '✅' : '⬜';
+
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <div class="wishlist-item-info">
-                        <strong>${props.name}</strong>
+                        <strong>${statusIcon} ${props.name}</strong>
                         <small>${getCountryName(props.stat)} | ${props.ele} m a.s.l.</small>
                     </div>
                     <button class="wishlist-remove-btn" onclick="removeFromWishlist(${peakId})">
@@ -48,8 +52,9 @@ function renderWishlist() {
         }
     }
     
-    // AKTUALIZUJEME POČÍTADLO PO KAŽDÉ ZMĚNĚ SEZNAMU
-    updateCounter(); // Volá ui.js
+    // DŮLEŽITÉ: Aktualizujeme počítadlo v patičce
+    // Nyní to bude fungovat správně, protože updateCounter v ui.js bere data z getWishlist()
+    updateCounter(); 
 }
 
 function addToWishlist(peakId) {
@@ -57,7 +62,7 @@ function addToWishlist(peakId) {
     if (!ids.includes(peakId)) {
         ids.push(peakId);
         saveWishlist(ids);
-        renderWishlist(); // Tato funkce nyní volá i updateCounter()
+        renderWishlist();
     }
     searchInput.value = '';
     resultsContainer.style.display = 'none';
@@ -67,7 +72,7 @@ function removeFromWishlist(peakId) {
     let ids = getWishlist();
     ids = ids.filter(id => id !== peakId);
     saveWishlist(ids);
-    renderWishlist(); // Tato funkce nyní volá i updateCounter()
+    renderWishlist();
 }
 
 /* === FUNKCE PRO VYHLEDÁVÁNÍ === */
@@ -114,12 +119,10 @@ fetch('data/VrcholyAll.geojson')
     .then(res => res.json())
     .then(data => {
         allPeaks = data.features;
-        totalPeakCount = data.features.length; // Potřebné pro ui.js
+        // Globální proměnná pro ui.js (pokud by byla potřeba, ale ui.js už používá wishlist)
+        totalPeakCount = data.features.length; 
         
-        // Vykreslíme seznam A TÍM I POČÍTADLO
         renderWishlist(); 
-        
-        // (createCheckpoints() je nyní voláno automaticky z updateCounter())
     })
     .catch(err => {
         console.error("Error loading peak data:", err);

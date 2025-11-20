@@ -1,93 +1,106 @@
 /* === FUNKCE PRO AKTUALIZACI UI === */
 
 /**
- * NOVÁ VERZE: Počítá postup vůči *wishlistu*
+ * Počítá postup POUZE vůči vrcholům ve WISHLISTU
  */
 function updateCounter() {
-    const peakData = getPeakData(); // Zdoláno: { "123": {data...}, "456": {data...} }
-    const wishlistIDs = getWishlist(); // Wishlist: [123, 789]
+    const peakData = getPeakData(); // Zdoláno (data z localStorage)
+    const wishlistIDs = getWishlist(); // Wishlist (pole IDček)
 
-    const totalCount = wishlistIDs.length; // Maximum je počet vrcholů ve wishlistu
+    // 1. Celkový počet je dán velikostí Wishlistu (nikoliv všemi vrcholy v GeoJSONu)
+    const totalCount = wishlistIDs.length;
     let zdolanocount = 0;
 
-    // Spočítáme průnik (kolik z wishlistu je ve zdoláno)
+    // 2. Spočítáme, kolik vrcholů z Wishlistu je zároveň zdoláno
     if (totalCount > 0) {
         for (const peakId of wishlistIDs) {
+            // Pozor: peakId může být číslo, klíče v peakData jsou stringy
             if (peakData.hasOwnProperty(peakId)) {
                 zdolanocount++;
             }
         }
     }
 
-    // Aktualizace textu
+    // 3. Aktualizace textu
     const numbersEl = document.getElementById('counter-numbers');
     if (numbersEl) {
         if (totalCount === 0) {
-            // Pokud je wishlist prázdný, ukážeme celkový počet zdolaných vůči VŠEM vrcholům
-            const totalClimbed = Object.keys(peakData).length;
-            if (totalPeakCount > 0) { // totalPeakCount je globální proměnná
-                numbersEl.innerText = `${totalClimbed} / ${totalPeakCount}`;
-            } else {
-                numbersEl.innerText = `Loading...`;
-            }
+            numbersEl.innerText = "Wishlist is empty";
         } else {
-            // Pokud wishlist NENÍ prázdný, ukážeme postup wishlistu
             numbersEl.innerText = `${zdolanocount} / ${totalCount}`;
         }
     }
 
-    // Aktualizace pruhu
+    // 4. Aktualizace pruhu
     const fillEl = document.getElementById('progress-bar-fill');
     if (fillEl) {
         const percentage = (totalCount === 0) ? 0 : (zdolanocount / totalCount) * 100;
         fillEl.style.width = `${percentage}%`;
+        
+        // Nastavení barvy (zlatá/tyrkysová dle konstanty)
+        if (typeof COLOR_ZDOLANO !== 'undefined') {
+             fillEl.style.backgroundColor = COLOR_ZDOLANO;
+        }
     }
 
-    // Musíme také aktualizovat checkpointy, protože totalCount se mohl změnit
-    createCheckpoints();
+    // 5. Aktualizace checkpointů (rysek na pruhu)
+    createCheckpoints(totalCount);
 }
 
 /**
- * NOVÁ VERZE: Checkpointy po 5 vrcholech (vůči wishlistu)
+ * Vytvoří rysky na progress baru po 5 vrcholech
  */
-function createCheckpoints() {
+function createCheckpoints(totalCount) {
     const container = document.getElementById('progress-bar-markers');
-    const totalCount = getWishlist().length; // Max je počet ve wishlistu
-
+    
     if (!container) return;
-    container.innerHTML = ''; // Vyčistíme staré
+    container.innerHTML = ''; // Vyčistit staré
 
-    if (totalCount === 0) return; // Pokud je wishlist prázdný, nic nekreslíme
+    if (totalCount === 0 || !totalCount) return;
 
-    // Projdeme po 5 až k celkovému počtu
-    for (let i = 1; i < totalCount; i += 1) {
-        // Vypočítáme pozici značky v procentech
+    // Rysky po 5 vrcholech
+    for (let i = 5; i < totalCount; i += 5) {
         const percentage = (i / totalCount) * 100;
-
         const marker = document.createElement('div');
         marker.className = 'checkpoint-marker';
         marker.style.left = `${percentage}%`;
-        
         container.appendChild(marker);
     }
 }
 
+/* --- Pomocné funkce pro UI --- */
+
 function editPeak(peakId) {
     if (!peakId) return;
-    const layer = peakLayerMap.get(peakId);
-    if (layer) {
-        layer.openPopup();
+    // Funkce pro přesměrování na mapu a otevření popupu
+    // Pokud jsme na mapě, peakLayerMap existuje
+    if (typeof peakLayerMap !== 'undefined') {
+        const layer = peakLayerMap.get(peakId);
+        if (layer) {
+            layer.openPopup();
+        }
+    } else {
+        // Pokud jsme na wishlistu, musíme uživatele poslat na mapu
+        // (Toto je pokročilejší, zatím necháme prázdné nebo alert)
+        window.location.href = "index.html";
     }
 }
 
+// Funkce pro aktualizaci seznamu v levém panelu (na stránce mapy)
 function updatePeakList() {
-    const peakData = getPeakData();
+    // Tato funkce běží jen na stránce s mapou, kde je element 'peak-list'
     const listEl = document.getElementById('peak-list');
-    if (!listEl || allPeaksData.length === 0) return;
+    if (!listEl) return;
+
+    const peakData = getPeakData();
+    // allPeaksData je globální proměnná v mapa.js
+    if (typeof allPeaksData === 'undefined' || allPeaksData.length === 0) return;
+    
     listEl.innerHTML = ''; 
 
     let climbedPeaksInfo = [];
     for (const peakId in peakData) {
+        // Najdeme data o vrcholu
         const feature = allPeaksData.find(f => f.properties.OBJECTID == peakId);
         if (feature) {
             climbedPeaksInfo.push({
@@ -101,6 +114,7 @@ function updatePeakList() {
         }
     }
 
+    // Seřadíme podle data (nejnovější nahoře)
     climbedPeaksInfo.sort((a, b) => {
         if (a.datum && b.datum) return b.datum.localeCompare(a.datum);
         if (a.datum && !b.datum) return -1;
@@ -128,9 +142,9 @@ function updatePeakList() {
                 <span class="peak-list-country">${countryName}</span>
                 <small class="peak-list-date">${dateStr}</small>
                 <button class="edit-peak-emoji-btn" 
-                        title="Edit entry" 
+                        title="Show on map" 
                         onclick="editPeak(${peak.id})">
-                    ✏️
+                    📍
                 </button>
             `;
             listEl.appendChild(li);
@@ -138,40 +152,40 @@ function updatePeakList() {
     }
 }
 
+// Funkce pro inicializaci grafu (běží jen na stránce s mapou)
 function initializeDashboard() {
-    // Kontrola, zda graf existuje (pouze na index.html)
-    const ctx = document.getElementById('elevation-chart');
-    if (!ctx) return; 
+    const ctxElement = document.getElementById('elevation-chart');
+    if (!ctxElement) return;
 
-    elevationChart = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Elevation Gain',
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { 
-                y: { 
-                    beginAtZero: true,
-                    ticks: { color: getComputedStyle(document.body).getPropertyValue('color') }
-                },
-                x: {
-                    ticks: { color: getComputedStyle(document.body).getPropertyValue('color') }
+    const ctx = ctxElement.getContext('2d');
+    
+    // Globální proměnná elevationChart z mapa.js
+    if (typeof Chart !== 'undefined') {
+        elevationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Elevation Gain',
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { beginAtZero: true, ticks: { color: '#666' } },
+                    x: { ticks: { color: '#666' } }
                 }
             }
-        }
-    });
+        });
+    }
 
-    // Kontrola, zda filtry existují
+    // Listenery
     const filterCountry = document.getElementById('filter-country');
     if (filterCountry) {
         filterCountry.addEventListener('change', updateDashboard);
@@ -180,22 +194,19 @@ function initializeDashboard() {
     }
 }
 
+// Funkce pro aktualizaci grafu a statistik
 function updateDashboard() {
-    if (!elevationChart) return; // Nekreslíme graf, pokud jsme na wishlist.html
-
+    if (typeof elevationChart === 'undefined' || !elevationChart) return;
+    if (typeof allPeaksData === 'undefined' || allPeaksData.length === 0) return;
+    
     const peakData = getPeakData();
-    if (allPeaksData.length === 0) return;
-
     const filterCountry = document.getElementById('filter-country').value;
     const filterDateFrom = document.getElementById('filter-date-from').value;
     const filterDateTo = document.getElementById('filter-date-to').value;
     
-    let stats = {
-        'AUT': 0, 'ITA': 0, 'CHE': 0, 'FRA': 0, 'DEU': 0, 'SVN': 0
-    };
+    let stats = { 'AUT': 0, 'ITA': 0, 'CHE': 0, 'FRA': 0, 'DEU': 0, 'SVN': 0 };
     let totalElevationSum = 0;
-    
-    let count4000 = 0, count3750 = 0, count3500 = 0, count3250 = 0, count3000 = 0;
+    let count4000 = 0, count3500 = 0, count3000 = 0, count2500 = 0;
 
     for (const peakId in peakData) {
         const feature = allPeaksData.find(f => f.properties.OBJECTID == peakId);
@@ -209,44 +220,44 @@ function updateDashboard() {
         if (filterDateTo && climbData.datum && climbData.datum > filterDateTo) continue;
         
         const ele = props.ele;
-        if (ele && ele >= 4000) { count4000++; }
-        else if (ele && ele >= 3750) { count3750++; }
-        else if (ele && ele >= 3500) { count3500++; }
-        else if (ele && ele >= 3250) { count3250++; }
-        else if (ele && ele >= 3000) { count3000++; }
+        if (ele) {
+            if (ele >= 4000) count4000++;
+            else if (ele >= 3500) count3500++;
+            else if (ele >= 3000) count3000++;
+            else if (ele >= 2500) count2500++;
+        }
         
         const elevace = parseInt(climbData.elevace, 10) || 0;
-        if (elevace > 0) {
-            if (stats.hasOwnProperty(props.stat)) {
-                stats[props.stat] += elevace;
-            }
+        if (elevace > 0 && stats.hasOwnProperty(props.stat)) {
+            stats[props.stat] += elevace;
         }
         totalElevationSum += elevace;
     }
 
-    document.getElementById('total-elevation-sum').innerText = `${totalElevationSum.toLocaleString('en-US')} m ⬆️`;
-    document.getElementById('stat-count-4000').innerText = count4000;
-    document.getElementById('stat-count-3750').innerText = count3750;
-    document.getElementById('stat-count-3500').innerText = count3500;
-    document.getElementById('stat-count-3250').innerText = count3250;
-    document.getElementById('stat-count-3000').innerText = count3000;
+    // Update HTML
+    const elTotal = document.getElementById('total-elevation-sum');
+    if (elTotal) elTotal.innerText = `${totalElevationSum.toLocaleString('en-US')} m ⬆️`;
     
+    if(document.getElementById('stat-count-4000')) document.getElementById('stat-count-4000').innerText = count4000;
+    if(document.getElementById('stat-count-3500')) document.getElementById('stat-count-3500').innerText = count3500;
+    if(document.getElementById('stat-count-3000')) document.getElementById('stat-count-3000').innerText = count3000;
+    if(document.getElementById('stat-count-2500')) document.getElementById('stat-count-2500').innerText = count2500;
+    
+    // Update Chart
     let labels = [], data = [], colors = [];
     for (const stat in stats) {
         if (stats[stat] > 0) {
-            labels.push(stat);
+            labels.push(getCountryName(stat));
             data.push(stats[stat]);
             colors.push(getPeakColor(stat));
         }
     }
-    
     elevationChart.data.labels = labels;
     elevationChart.data.datasets[0].data = data;
     elevationChart.data.datasets[0].backgroundColor = colors;
     elevationChart.update();
 }
 
-/* === FUNKCE PRO NASTAVENÍ TÉMATU === */
 function setTheme(theme) {
     localStorage.setItem(STORAGE_KEY_THEME, theme);
     const toggle = document.getElementById('theme-toggle-checkbox');
@@ -259,10 +270,10 @@ function setTheme(theme) {
         if (toggle) toggle.checked = false;
     }
     
-    if (elevationChart) {
+    if (typeof elevationChart !== 'undefined' && elevationChart) {
         const newColor = (theme === 'dark') ? '#eee' : '#666';
-        elevationChart.options.scales.y.ticks.color = newColor;
-        elevationChart.options.scales.x.ticks.color = newColor;
+        if(elevationChart.options.scales.y) elevationChart.options.scales.y.ticks.color = newColor;
+        if(elevationChart.options.scales.x) elevationChart.options.scales.x.ticks.color = newColor;
         elevationChart.update();
     }
 }

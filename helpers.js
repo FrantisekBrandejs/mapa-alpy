@@ -1,15 +1,15 @@
 /* === POMOCNÉ FUNKCE === */
 
-// Funkce pro získání barvy podle země
+// Funkce pro získání barvy podle země (NOVÉ BARVY)
 function getPeakColor(stat) {
     switch (stat) {
-        case 'AUT': return '#e66e6e';
-        case 'ITA': return '#74e66e';
-        case 'CHE': return '#e66ec8';
-        case 'FRA': return '#6ea7e6';
-        case 'DEU': return '#000000';
-        case 'SVN': return '#e6c36e';
-        default:    return '#808080';
+        case 'AUT': return '#FE8B9E'; // Rakousko (Červená)
+        case 'ITA': return '#83D897'; // Itálie (Zelená)
+        case 'CHE': return '#EC9CD2'; // Švýcarsko (Vínová)
+        case 'FRA': return '#7681E5'; // Francie (Modrá)
+        case 'DEU': return '#F9ED62'; // Německo (Oranžová)
+        case 'SVN': return '#A8FD5D'; // Slovinsko (Světle zelená)
+        default:    return null;      // Ostatní (Ignorovat/Skrýt)
     }
 }
 
@@ -22,7 +22,7 @@ function getFlagEmoji(stat) {
         case 'FRA': return '🇫🇷';
         case 'DEU': return '🇩🇪';
         case 'SVN': return '🇸🇮';
-        default:    return '🏴‍☠️';
+        default:    return '🏳️';
     }
 }
 
@@ -35,7 +35,7 @@ function getCountryName(stat) {
         case 'FRA': return 'France';
         case 'DEU': return 'Germany';
         case 'SVN': return 'Slovenia';
-        default:    return 'Unknown';
+        default:    return 'Other';
     }
 }
 
