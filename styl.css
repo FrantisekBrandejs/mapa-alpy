@@ -1,477 +1,80 @@
-/* === ZÁKLADNÍ NASTAVENÍ MŘÍŽKY (GRID) === */
-html, body {
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
-}
+/* === RESET A GRID === */
+html, body { height: 100vh; margin: 0; padding: 0; font-family: sans-serif; background: #f0f0f0; overflow: hidden; }
+body { display: grid; grid-template-rows: auto 1fr; }
 
-body {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-}
+/* === HEADER === */
+.page-header { padding: 0 20px; background: #fff; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; height: 60px; }
+.header-content h1 { margin: 0; font-size: 1.4em; }
+.header-content h2 { margin: 0; font-size: 0.9em; color: #666; font-weight: normal; }
+.header-btn { padding: 6px 12px; margin-left: 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; font-weight: bold; }
+.header-btn:hover { background: #eee; }
 
-/* PŘIDEJTE TOTO NOVÉ PRAVIDLO: */
-/* Zabráníme posouvání POUZE na stránce s mapou */
-body.map-page {
-    overflow: hidden;
-}
-/* === HLAVIČKA A PŘEPÍNAČE === */
-/* === HLAVIČKA (S EXTERNÍM LOGEM) === */
-.page-header {
-    padding: 0 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 120px; /* Fixní výška hlavičky */
-    transition: background-color 0.3s, border-color 0.3s;
-}
+/* === LAYOUT === */
+.page-main { display: grid; grid-template-columns: 400px 1fr 400px; overflow: hidden; }
 
-/* Odkaz kolem loga */
-.logo-link {
-    display: block;
-    height: 100%;
-    text-decoration: none;
-}
+/* === SIDEBARS === */
+.sidebar-left, .sidebar-right { background: #fff; padding: 20px; overflow-y: auto; box-sizing: border-box; }
+.sidebar-left { border-right: 1px solid #ccc; }
+.sidebar-right { border-left: 1px solid #ccc; }
+h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.2em; text-align: center; text-transform: uppercase; letter-spacing: 1px; color: #444; }
 
-/* Samotný obrázek loga */
-.logo-img {
-    height: 150px; /* Nastaví výšku, šířka se dopočítá */
-    width: auto;
-    margin-top: 20px; /* Jemné vycentrování */
-    display: block;
-    transition: filter 0.3s; /* Plynulý přechod barev */
-}
+/* === LIST === */
+.peak-list-container { list-style: none; padding: 0; margin: 0; }
+.peak-list-container li { padding: 12px 0; border-bottom: 1px solid #eee; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto auto auto; gap: 4px 10px; align-items: center; }
+.peak-list-name { font-size: 1.15em; font-weight: bold; color: #222; grid-column: 1 / 3; grid-row: 1 / 2; margin-bottom: 2px; }
+.peak-list-details { color: #555; font-size: 0.95em; grid-column: 1 / 2; grid-row: 2 / 3; }
+.peak-list-elevation { color: #006400; font-size: 0.95em; font-weight: bold; grid-column: 1 / 2; grid-row: 3 / 4; }
+.peak-list-country { font-size: 0.95em; color: #555; grid-column: 1 / 2; grid-row: 4 / 5; margin-top: 5px; font-style: italic; }
+.peak-list-date { color: #666; font-size: 0.95em; grid-column: 2 / 3; grid-row: 4 / 5; text-align: right; margin-top: 5px; }
+.edit-peak-emoji-btn { grid-column: 2 / 3; grid-row: 5 / 6; justify-self: end; background: none; border: none; padding: 5px; cursor: pointer; font-size: 1.1em; outline: none; }
+.edit-peak-emoji-btn:hover { transform: scale(1.2); }
 
-/* === TMAVÝ REŽIM PRO LOGO === */
-/* Zde používáme trik: invertujeme barvy obrázku.
-Černá (#333) se změní na světle šedou/bílou.
-Zlatá (#ffd700) se změní na modrou, což nechceme, 
-proto použijeme 'hue-rotate', abychom barvu vrátili zpět k teplým tónům.
-*/
-.dark-mode .logo-img {
-    filter: invert(1) hue-rotate(180deg);
-}
-.app-controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
+/* === STATS === */
+.peak-stats-container { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px; }
+.peak-stats-container h4 { margin: 0 0 10px 0; text-align: center; font-size: 1em; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+.peak-stat-item { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.95em; border-bottom: 1px dashed #eee; }
+.peak-stat-item.total-row { border-top: 2px solid #ddd; margin-top: 5px; padding-top: 8px; font-weight: bold; color: #000; border-bottom: none; }
+.peak-stat-item.total-row .stat-value { font-size: 1.2em; color: #2D7813; }
+.stat-value { font-weight: bold; color: #000; }
+.total-elevation { text-align: center; font-weight: bold; color: #2d7813; margin-bottom: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px; }
+.total-elevation span { display: block; font-size: 1.6em; margin-top: 5px; }
 
-/* ODKAZ V HLAVIČCE */
-.header-link {
-    text-decoration: none;
-    font-weight: bold;
-    color: #007bff;
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: background-color 0.2s;
-}
-.header-link:hover { 
-    background-color: #f0f0f0;
-}
-
-.theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
-.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc; transition: .4s; border-radius: 24px;
-}
-.slider:before {
-    position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
-    background-color: white; transition: .4s; border-radius: 50%;
-}
-input:checked + .slider { background-color: #007bff; }
-input:checked + .slider:before { transform: translateX(20px); }
-
-/* === ROZLOŽENÍ POUZE PRO STRÁNKU S MAPOU === */
-.map-page .page-main {
-    display: grid;
-    grid-template-columns: 300px 1fr 300px; /* Tři sloupce */
-    overflow: hidden;
-}
-
-/* === LEVÝ SIDEBAR (SEZNAM) === */
-.sidebar-left {
-    background-color: #fff;
-    border-right: 1px solid #ccc;
-    padding: 15px;
-    overflow-y: auto;
-    height: 100%;
-    box-sizing: border-box;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-.sidebar-left h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
-    transition: border-color 0.3s;
-}
-.peak-list-container { list-style-type: none; padding: 0; margin: 0; }
-.peak-list-container li {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    display: grid;
-    grid-template-columns: 1fr auto; 
-    grid-template-rows: auto auto auto auto auto;
-    gap: 2px 8px; 
-    align-items: center;
-    transition: border-color 0.3s;
-}
-.peak-list-name {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #333;
-    grid-column: 1 / 3; 
-    grid-row: 1 / 2;
-    margin-bottom: 4px;
-}
-.peak-list-details { color: #555; font-size: 0.9em; grid-column: 1 / 2; grid-row: 2 / 3; }
-.peak-list-elevation {
-    color: #006400; font-size: 0.9em; font-weight: bold;
-    grid-column: 1 / 2; grid-row: 3 / 4;
-}
-.peak-list-country {
-    font-size: 0.9em; color: #555; grid-column: 1 / 2;
-    grid-row: 4 / 5; margin-top: 5px;
-}
-.peak-list-date {
-    color: #666; font-size: 0.9em; grid-column: 2 / 3;
-    grid-row: 4 / 5; text-align: right; margin-top: 5px;
-}
-.edit-peak-emoji-btn {
-    grid-column: 2 / 3; grid-row: 5 / 6;    
-    justify-self: end; background: none; border: none;
-    padding: 5px; margin-top: 5px; cursor: pointer;
-    font-size: 1em; outline: none;
-}
-.edit-peak-emoji-btn:hover { background-color: #f0f0f0; border-radius: 5px; }
-
-/* === MAPA === */
-#mapa { height: 100%; width: 100%; }
-.leaflet-top.leaflet-left .leaflet-control-search {
-    margin-top: 10px;
-    margin-left: 10px;
-}
-.leaflet-control-search { z-index: 1001; }
-
-/* === PRAVÝ SIDEBAR (GRAF) === */
-.sidebar-right {
-    background-color: #fff;
-    border-left: 1px solid #ccc;
-    padding: 15px;
-    overflow-y: auto;
-    height: 100%;
-    box-sizing: border-box;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-.sidebar-right h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
-    transition: border-color 0.3s;
-}
-.peak-stats-container {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    border: 1px solid #eee;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-.peak-stats-container h4 {
-    margin: 0 0 8px 0; text-align: center;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px; font-size: 1em;
-    transition: border-color 0.3s;
-}
-.peak-stat-item {
-    display: flex; justify-content: space-between;
-    padding: 4px 0; font-size: 0.9em;
-}
-.stat-label { color: #333; }
-.stat-value { font-weight: bold; font-size: 1.1em; color: #000; }
-.total-elevation {
-    font-size: 1.2em; font-weight: bold; color: #006400;
-    text-align: center; margin-bottom: 15px;
-}
-.total-elevation span { display: block; font-size: 1.4em; }
-.filters {
-    display: grid; grid-template-columns: auto 1fr;
-    gap: 8px; align-items: center;
-}
+/* === FILTERS & CHART === */
+.filters { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 20px; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
 .filters label { font-weight: bold; font-size: 0.9em; }
-.filters select, .filters input {
-    width: 100%; padding: 5px; box-sizing: border-box;
-    background-color: #fff; color: #333; border: 1px solid #ccc;
-}
-.chart-container { margin-top: 15px; position: relative; height: 200px; }
+.filters select, .filters input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+.chart-container { height: 250px; width: 100%; }
 
-/* === PATIČKA (POČÍTADLO) === */
-.page-footer {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-top: 1px solid #ccc;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-.counter-wrapper { max-width: 800px; margin: 0 auto; }
-.counter-wrapper h3 { margin: 0 0 10px 0; text-align: center; font-size: 1em; }
-#progress-bar-background {
-    position: relative; overflow: hidden; width: 100%; height: 25px;
-    background-color: #e0e0e0; border-radius: 5px; border: 1px solid #bbb;
-    box-sizing: border-box;
-}
-#progress-bar-fill {
-    position: absolute; top: 0; left: 0; height: 100%; width: 0%;
-    background-color: #ffd700; border-radius: 4px;
-    transition: width 0.5s ease; z-index: 1;
-}
-#progress-bar-markers {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 2;
-}
-.checkpoint-marker {
-    position: absolute; top: 0; bottom: 0; width: 2px;
-    background-color: rgba(0, 0, 0, 0.3);
-}
-#counter-text {
-    text-align: center; margin-top: 8px; font-weight: bold; font-size: 14px;
-}
+/* === MAP === */
+#mapa { width: 100%; height: 100%; }
+.leaflet-top.leaflet-left .leaflet-control-search { margin-top: 10px; margin-left: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.leaflet-control-search .search-input { border-radius: 4px; height: 30px; border: 1px solid #ccc; }
 
-/* === POPUP === */
-.popup-checkbox-container { margin-top: 10px; font-size: 14px; }
-.popup-checkbox-container hr { margin: 8px 0; border: 0; border-top: 1px solid #ccc; }
-.popup-date-container, .popup-elevation-container { margin-top: 8px; }
-.popup-date-container label, .popup-elevation-container label {
-    margin-right: 5px; width: 100px; display: inline-block;
-}
-.popup-date-container input[type="date"], 
-.popup-elevation-container input[type="number"] {
-    width: 130px;
-    background-color: #fff; color: #333; border: 1px solid #ccc;
-}
-.popup-elevation-container input[type="number"]::placeholder { font-style: italic; color: #999; }
-.popup-save-button {
-    margin-top: 12px; width: 100%; padding: 6px;
-    background-color: #007bff; color: white; border: none;
-    border-radius: 4px; cursor: pointer;
-}
-.popup-save-button:hover { background-color: #0056b3; }
+/* === ALTITUDE FILTER === */
+.leaflet-control-altitude-filter { background: #fff; padding: 12px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.4); width: 220px; margin-left: 10px; margin-top: 10px; clear: both; }
+.altitude-filter-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #333; }
+.altitude-filter-inputs { display: flex; gap: 5px; margin-bottom: 8px; }
+.altitude-filter-inputs input { width: 50%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; }
+.altitude-filter-buttons { display: flex; gap: 5px; }
+.altitude-filter-button, .altitude-filter-reset-button { flex: 1; padding: 5px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 12px; color: white; }
+.altitude-filter-button { background-color: #007bff; }
+.altitude-filter-reset-button { background-color: #6c757d; }
 
-/* === TRVALÝ POPIS ZDOLANÝCH VRCHOLŮ === */
-.climbed-tooltip {
-    background: none; border: none;
-    box-shadow: none; padding: 0;
-}
-.climbed-label {
-    font-size: 11px; font-weight: bold; color: #000;
-    text-shadow: 
-        -1px -1px 0 #FFF, 1px -1px 0 #FFF,
-        -1px 1px 0 #FFF, 1px 1px 0 #FFF;
-}
-
-/* === LEGENDA V MAPĚ === */
-.legend-container-map {
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    line-height: 1.5;
-}
-.legend-container-map h4 {
-    margin: 0 0 10px 0;
-    text-align: center;
-    font-size: 1em;
-}
+/* === LEGEND === */
+.legend-container-map { background: rgba(255, 255, 255, 0.95); padding: 12px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); min-width: 140px; }
+.legend-container-map h4 { margin: 0 0 8px 0; text-align: left; font-size: 14px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #333; }
 .legend-list { list-style: none; padding: 0; margin: 0; }
-.legend-list li {
-    display: flex; align-items: center;
-    margin-bottom: 5px; font-size: 0.9em;
-}
-.legend-color {
-    width: 15px; height: 15px; border-radius: 50%;
-    margin-right: 8px; border: 1px solid #777;
-    flex-shrink: 0;
-}
+.legend-list li { display: flex; align-items: center; margin-bottom: 4px; font-size: 13px; color: #444; }
+.legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; border: 1px solid #999; flex-shrink: 0; }
 .legend-separator { height: 1px; background-color: #ddd; margin: 8px 0; }
 
-/* === FILTR VÝŠKY V MAPĚ === */
-.leaflet-control-altitude-filter {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 10px;
-    border-radius: 5px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-    width: 200px;
-    /* NOVÁ POZICE */
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-.altitude-filter-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
-    font-size: 0.9em;
-}
-.altitude-filter-inputs {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 8px;
-}
-.altitude-filter-inputs input[type="number"] {
-    width: 48%;
-    padding: 4px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
-.altitude-filter-buttons {
-    display: flex;
-    gap: 5px;
-}
-.altitude-filter-button, .altitude-filter-reset-button {
-    flex: 1; 
-    padding: 4px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-}
-.altitude-filter-button { background-color: #007bff; }
-.altitude-filter-button:hover { background-color: #0056b3; }
-.altitude-filter-reset-button { background-color: #6c757d; }
-.altitude-filter-reset-button:hover { background-color: #5a6268; }
-
-
-/* === TMAVÝ REŽIM (DARK MODE) === */
-body.dark-mode {
-    background-color: #121212;
-    color: #eee;
-}
-.dark-mode .page-header,
-.dark-mode .sidebar-left,
-.dark-mode .sidebar-right,
-.dark-mode .page-footer {
-    background-color: #1e1e1e;
-    border-color: #333;
-}
-.dark-mode .page-header h2 { color: #888; }
-.dark-mode .sidebar-left h3,
-.dark-mode .sidebar-right h3 { border-color: #444; }
-
-.dark-mode .peak-stats-container {
-    background-color: #2a2a2a;
-    border-color: #444;
-}
-.dark-mode .peak-stats-container h4 { border-color: #444; }
-
-.dark-mode .peak-list-container li { border-color: #333; }
-.dark-mode .peak-list-name { color: #eee; }
-.dark-mode .peak-list-details,
-.dark-mode .peak-list-country { color: #bbb; }
-.dark-mode .peak-list-date { color: #888; }
-.dark-mode .peak-list-elevation { color: #76c776; }
-.dark-mode .edit-peak-emoji-btn { color: #eee; }
-.dark-mode .edit-peak-emoji-btn:hover { background-color: #333; }
-
-.dark-mode .total-elevation { color: #76c776; }
-.dark-mode .stat-label { color: #bbb; }
-.dark-mode .stat-value { color: #eee; }
-.dark-mode .filters select,
-.dark-mode .filters input {
-    background-color: #2a2a2a;
-    color: #eee;
-    border-color: #444;
-}
-
-.dark-mode #progress-bar-background {
-    background-color: #444;
-    border-color: #555;
-}
-.dark-mode .checkpoint-marker { background-color: rgba(255, 255, 255, 0.3); }
-
-/* Legenda v mapě (Tmavý režim) */
-.dark-mode .legend-container-map {
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #eee;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-.dark-mode .legend-container-map .legend-separator {
-    background-color: #444;
-}
-.dark-mode .legend-container-map .legend-color {
-    border-color: #aaa;
-}
-
-/* Ovládací prvky Leaflet v tmavém režimu */
-.dark-mode .leaflet-control-layers,
-.dark-mode .leaflet-control-search {
-    background: #1e1e1e;
-    color: #eee;
-    border: 1px solid #444;
-}
-.dark-mode .leaflet-control-layers-separator { border-top: 1px solid #444; }
-.dark-mode .leaflet-control-search .search-input {
-    background-color: #2a2a2a;
-    color: #eee;
-    border-color: #444;
-}
-.dark-mode .leaflet-control-search .search-tip {
-    background-color: #1e1e1e;
-    border-color: #444;
-    color: #eee;
-}
-
-/* Filtr výšky v tmavém režimu */
-.dark-mode .leaflet-control-altitude-filter {
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #eee;
-    border-color: #444;
-}
-.dark-mode .altitude-filter-inputs input[type="number"] {
-    background-color: #333;
-    color: #eee;
-    border-color: #555;
-}
-.dark-mode .altitude-filter-reset-button {
-    background-color: #444;
-    border-color: #555;
-}
-.dark-mode .altitude-filter-reset-button:hover {
-    background-color: #555;
-}
-
-/* Popup okno v tmavém režimu */
-.dark-mode .leaflet-popup-content-wrapper,
-.dark-mode .leaflet-popup-tip {
-    background: #2a2a2a;
-    color: #eee;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.6);
-}
-.dark-mode .popup-checkbox-container hr { border-top-color: #444; }
-.dark-mode .popup-date-container input,
-.dark-mode .popup-elevation-container input {
-    background-color: #333;
-    color: #eee;
-    border-color: #555;
-}
-.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}
-
-/* Odkaz v hlavičce (Tmavý režim) */
-.dark-mode .header-link { 
-    color: #58a6ff; 
-}
-.dark-mode .header-link:hover { 
-    background-color: #333; 
-}
+/* === POPUP === */
+.popup-checkbox-container { font-size: 13px; min-width: 200px; }
+.popup-checkbox-container hr { margin: 10px 0; border: 0; border-top: 1px solid #eee; }
+.popup-date-container, .popup-elevation-container { margin-top: 8px; display: flex; align-items: center; }
+.popup-date-container label, .popup-elevation-container label { width: 100px; font-weight: bold; color: #555; }
+.popup-date-container input, .popup-elevation-container input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 3px; }
+.popup-save-button { width: 100%; margin-top: 15px; padding: 8px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.popup-save-button:hover { background-color: #218838; }
+.climbed-tooltip { background: none; border: none; box-shadow: none; padding: 0; }
+.climbed-label { font-size: 11px; font-weight: bold; color: #000; text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; }

@@ -4,44 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alpine Peaks</title>
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
-
     <link rel="stylesheet" href="styl.css" />
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="map-page">
-    
+<body>
     <header class="page-header">
         <div class="header-content">
-            <a href="index.html" class="logo-link">
-                <img src="logo.svg" alt="Alpine Peaks Logo" class="logo-img">
-            </a>
+            <h1>Alpine Peaks</h1>
+            <h2>> 2500 m a. s. l.</h2>
         </div>
         
         <div class="app-controls">
-            <a href="wishlist.html" class="header-link">Wishlist</a>
-            <div class="theme-toggle">
-                <span>Light</span>
-                <label class="switch">
-                    <input type="checkbox" id="theme-toggle-checkbox">
-                    <span class="slider round"></span>
-                </label>
-                <span>Dark</span>
-            </div>
+            <button id="btn-export" class="header-btn">Download Data ⬇️</button>
+            <button id="btn-import" class="header-btn">Upload Data ⬆️</button>
+            <input type="file" id="file-import" style="display: none;" accept=".json,.geojson">
         </div>
     </header>
 
     <main class="page-main">
-        
         <aside class="sidebar-left">
-            <h3>Recently Climbed Peaks</h3>
-            <ul id="peak-list" class="peak-list-container">
-                <li>No peaks have been climbed yet.</li>
-            </ul>
+            <h3>Recently Climbed</h3>
+            <ul id="peak-list" class="peak-list-container"></ul>
         </aside>
         
         <div id="mapa"></div>
@@ -50,33 +36,22 @@
             <h3>Statistics</h3>
             
             <div class="peak-stats-container">
-                <h4>Climbed Peaks (by altitude):</h4>
+                <h4>Climbed (by altitude):</h4>
+                <div class="peak-stat-item"><span>&gt; 4000 m:</span><span id="stat-count-4000" class="stat-value">0</span></div>
+                <div class="peak-stat-item"><span>3500–3999 m:</span><span id="stat-count-3500" class="stat-value">0</span></div>
+                <div class="peak-stat-item"><span>3000–3499 m:</span><span id="stat-count-3000" class="stat-value">0</span></div>
+                <div class="peak-stat-item"><span>2500–2999 m:</span><span id="stat-count-2500" class="stat-value">0</span></div>
                 
-                <div class="peak-stat-item">
-                    <span class="stat-label">&gt; 4000 m:</span>
-                    <span id="stat-count-4000" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3500 – 3999 m:</span>
-                    <span id="stat-count-3500" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">3000 – 3499 m:</span>
-                    <span id="stat-count-3000" class="stat-value">0</span>
-                </div>
-                <div class="peak-stat-item">
-                    <span class="stat-label">2500 – 2999 m:</span>
-                    <span id="stat-count-2500" class="stat-value">0</span>
+                <div class="peak-stat-item total-row">
+                    <span class="stat-label">In Total:</span>
+                    <span id="stat-count-total" class="stat-value">0</span>
                 </div>
             </div>
 
-            <div class="total-elevation">
-                Total Elevation Gain:
-                <span id="total-elevation-sum">0 m ⬆️</span>
-            </div>
-
+            <div class="total-elevation">Total Elevation Gain:<span id="total-elevation-sum">0 m</span></div>
+            
             <div class="filters">
-                <label for="filter-country">Country:</label>
+                <label>Country:</label>
                 <select id="filter-country">
                     <option value="ALL">All</option>
                     <option value="AUT">Austria</option>
@@ -86,35 +61,16 @@
                     <option value="DEU">Germany</option>
                     <option value="SVN">Slovenia</option>
                 </select>
-                
-                <label for="filter-date-from">From:</label>
-                <input type="date" id="filter-date-from">
-                
-                <label for="filter-date-to">To:</label>
-                <input type="date" id="filter-date-to">
+                <label>From:</label><input type="date" id="filter-date-from">
+                <label>To:</label><input type="date" id="filter-date-to">
             </div>
-            
-            <div class="chart-container">
-                <canvas id="elevation-chart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="elevation-chart"></canvas></div>
         </aside>
     </main>
 
-    <footer class="page-footer">
-        <div class="counter-wrapper">
-            <h3>My Progress</h3>
-            <div id="progress-bar-background">
-                <div id="progress-bar-fill"></div>
-                <div id="progress-bar-markers"></div>
-            </div>
-            <div id="counter-text">
-                Climbed Peaks: <span id="counter-numbers">Loading...</span>
-            </div>
-        </div>
-    </footer>
-    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
+    
     <script src="storage.js"></script>
     <script src="helpers.js"></script>
     <script src="ui.js"></script>

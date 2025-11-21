@@ -1,19 +1,17 @@
-/* === POMOCNÉ FUNKCE === */
+/* === HELPER FUNCTIONS === */
 
-// Funkce pro získání barvy podle země (NOVÉ BARVY)
 function getPeakColor(stat) {
     switch (stat) {
-        case 'AUT': return '#FE8B9E'; // Rakousko (Červená)
-        case 'ITA': return '#83D897'; // Itálie (Zelená)
-        case 'CHE': return '#EC9CD2'; // Švýcarsko (Vínová)
-        case 'FRA': return '#7681E5'; // Francie (Modrá)
-        case 'DEU': return '#F9ED62'; // Německo (Oranžová)
-        case 'SVN': return '#A8FD5D'; // Slovinsko (Světle zelená)
-        default:    return null;      // Ostatní (Ignorovat/Skrýt)
+        case 'AUT': return '#e66e6e';
+        case 'ITA': return '#74e66e';
+        case 'CHE': return '#e66ec8';
+        case 'FRA': return '#6ea7e6';
+        case 'DEU': return '#000000';
+        case 'SVN': return '#e6c36e';
+        default:    return null;
     }
 }
 
-// Funkce pro vlajky
 function getFlagEmoji(stat) {
     switch (stat) {
         case 'AUT': return '🇦🇹';
@@ -26,7 +24,6 @@ function getFlagEmoji(stat) {
     }
 }
 
-// Funkce pro název státu (v angličtině)
 function getCountryName(stat) {
     switch (stat) {
         case 'AUT': return 'Austria';
@@ -39,12 +36,9 @@ function getCountryName(stat) {
     }
 }
 
-// Funkce pro formát data
 function formatDate(isoDate) {
-    if (!isoDate || isoDate === "") {
-        return '---';
-    }
+    if (!isoDate || isoDate === "") return '---';
     const parts = isoDate.split('-');
     if (parts.length !== 3) return isoDate;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
