@@ -2,27 +2,16 @@
 
 function getPeakColor(stat) {
     switch (stat) {
-        case 'AUT': return '#e66e6e';
-        case 'ITA': return '#74e66e';
-        case 'CHE': return '#e66ec8';
-        case 'FRA': return '#6ea7e6';
-        case 'DEU': return '#000000';
-        case 'SVN': return '#e6c36e';
+        case 'AUT': return '#FD6D5D';
+        case 'ITA': return '#6bb36dff';
+        case 'CHE': return '#d66fb0ff';
+        case 'FRA': return '#6aa0f0ff';
+        case 'DEU': return '#fae94dff';
+        case 'SVN': return '#b1f82eff';
         default:    return null;
     }
 }
 
-function getFlagEmoji(stat) {
-    switch (stat) {
-        case 'AUT': return '🇦🇹';
-        case 'ITA': return '🇮🇹';
-        case 'CHE': return '🇨🇭';
-        case 'FRA': return '🇫🇷';
-        case 'DEU': return '🇩🇪';
-        case 'SVN': return '🇸🇮';
-        default:    return '🏳️';
-    }
-}
 
 function getCountryName(stat) {
     switch (stat) {

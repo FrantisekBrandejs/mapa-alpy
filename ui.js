@@ -6,6 +6,7 @@ function editPeak(peakId) {
         const layer = window.peakLayerMap.get(peakId);
         if (layer) {
             layer.openPopup();
+            // Volitelné: map.setView(layer.getLatLng(), 13);
         }
     }
 }
@@ -39,7 +40,7 @@ function updatePeakList() {
     });
 
     if (climbedPeaksInfo.length === 0) {
-        listEl.innerHTML = '<li style="padding:10px; color:#666;">No peaks have been climbed yet.</li>';
+        listEl.innerHTML = '<li style="padding:15px; color:#888; text-align:center; font-style:italic; border:none;">No peaks have been climbed yet.</li>';
     } else {
         for (const peak of climbedPeaksInfo) {
             const dateStr = formatDate(peak.datum);
@@ -47,17 +48,21 @@ function updatePeakList() {
             const altitudeStr = peak.ele ? `${peak.ele} m a.s.l.` : '---';
             let elevStr = '---';
             if (peak.elevace) {
-                elevStr = `${peak.elevace} m ⬆️`;
+                elevStr = `${peak.elevace} m ⬆`;
             }
 
             const li = document.createElement('li');
+            // ZDE PŘIDÁVÁME KLIKACÍ UDÁLOST NA CELÝ ŘÁDEK
+            li.setAttribute('onclick', `editPeak(${peak.id})`);
+            // Přidáme barevný proužek podle státu
+            const color = getPeakColor(peak.stat) || '#ccc';
+            li.style.borderLeft = `5px solid ${color}`;
+
             li.innerHTML = `
-                <strong class="peak-list-name">${getFlagEmoji(peak.stat)} ${peak.name}</strong>
-                <small class="peak-list-details">${altitudeStr}</small>
-                <small class="peak-list-elevation">${elevStr}</small>
-                <span class="peak-list-country">${countryName}</span>
-                <small class="peak-list-date">${dateStr}</small>
-                <button class="edit-peak-emoji-btn" title="Show on map" onclick="editPeak(${peak.id})">📍</button>
+                <div class="peak-list-details">Height: ${altitudeStr}</div>
+                <div class="peak-list-elevation">Gain: ${elevStr}</div>
+                <div class="peak-list-country">${countryName}</div>
+                <div class="peak-list-date">${dateStr}</div>
             `;
             listEl.appendChild(li);
         }
@@ -70,6 +75,9 @@ function initializeDashboard() {
 
     const ctx = ctxElement.getContext('2d');
     if (typeof Chart !== 'undefined') {
+        // Nastavíme globální font pro grafy
+        Chart.defaults.font.family = "'Oswald', sans-serif";
+        
         window.elevationChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -79,7 +87,7 @@ function initializeDashboard() {
                     data: [],
                     backgroundColor: [],
                     borderColor: [],
-                    borderWidth: 1
+                    borderWidth: 0
                 }]
             },
             options: {
@@ -126,8 +134,7 @@ function updateDashboard() {
         if (filterDateFrom && climbData.datum && climbData.datum < filterDateFrom) continue;
         if (filterDateTo && climbData.datum && climbData.datum > filterDateTo) continue;
         
-        countTotal++; // Zapocitavame celkem
-
+        countTotal++;
         const ele = props.ele;
         if (ele) {
             if (ele >= 4000) count4000++;
@@ -143,19 +150,19 @@ function updateDashboard() {
         totalElevationSum += elevace;
     }
 
-    document.getElementById('total-elevation-sum').innerText = `${totalElevationSum.toLocaleString('en-US')} m ⬆️`;
+    const elTotal = document.getElementById('total-elevation-sum');
+    if (elTotal) elTotal.innerText = `${totalElevationSum.toLocaleString('en-US')} m ⬆`;
     
-    document.getElementById('stat-count-4000').innerText = count4000;
-    document.getElementById('stat-count-3500').innerText = count3500;
-    document.getElementById('stat-count-3000').innerText = count3000;
-    document.getElementById('stat-count-2500').innerText = count2500;
-    // Nový součet
+    if(document.getElementById('stat-count-4000')) document.getElementById('stat-count-4000').innerText = count4000;
+    if(document.getElementById('stat-count-3500')) document.getElementById('stat-count-3500').innerText = count3500;
+    if(document.getElementById('stat-count-3000')) document.getElementById('stat-count-3000').innerText = count3000;
+    if(document.getElementById('stat-count-2500')) document.getElementById('stat-count-2500').innerText = count2500;
     if(document.getElementById('stat-count-total')) document.getElementById('stat-count-total').innerText = countTotal;
     
     let labels = [], data = [], colors = [];
     for (const stat in stats) {
         if (stats[stat] > 0) {
-            labels.push(getCountryName(stat));
+            labels.push(stat);
             data.push(stats[stat]);
             colors.push(getPeakColor(stat));
         }

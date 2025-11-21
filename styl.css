@@ -1,80 +1,188 @@
-/* === RESET A GRID === */
-html, body { height: 100vh; margin: 0; padding: 0; font-family: sans-serif; background: #f0f0f0; overflow: hidden; }
-body { display: grid; grid-template-rows: auto 1fr; }
+/* === RESET === */
+html, body { height: 100vh; margin: 0; padding: 0; font-family: 'Oswald', sans-serif; background: #f0f0f0; overflow: hidden; color: #333; font-weight: 300; }
 
-/* === HEADER === */
-.page-header { padding: 0 20px; background: #fff; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; height: 60px; }
-.header-content h1 { margin: 0; font-size: 1.4em; }
-.header-content h2 { margin: 0; font-size: 0.9em; color: #666; font-weight: normal; }
-.header-btn { padding: 6px 12px; margin-left: 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; font-weight: bold; }
-.header-btn:hover { background: #eee; }
+/* === HLAVNÍ LAYOUT (BEZ HLAVIČKY) === */
+body {
+    display: grid;
+    grid-template-columns: 400px 1fr 400px; /* 3 sloupce přes celou výšku */
+    height: 100vh;
+}
 
-/* === LAYOUT === */
-.page-main { display: grid; grid-template-columns: 400px 1fr 400px; overflow: hidden; }
+.page-main {
+    display: contents; /* Aby se sidebary a mapa chovaly jako přímé děti body */
+}
 
-/* === SIDEBARS === */
-.sidebar-left, .sidebar-right { background: #fff; padding: 20px; overflow-y: auto; box-sizing: border-box; }
-.sidebar-left { border-right: 1px solid #ccc; }
-.sidebar-right { border-left: 1px solid #ccc; }
-h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.2em; text-align: center; text-transform: uppercase; letter-spacing: 1px; color: #444; }
+/* === BOČNÍ PANELY (FLEXBOX) === */
+.sidebar-left, .sidebar-right {
+    background: #fff;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column; /* Prvky pod sebou */
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    z-index: 1000;
+}
+.sidebar-left { border-right: 1px solid #ddd; }
+.sidebar-right { border-left: 1px solid #ddd; }
 
-/* === LIST === */
+/* Pevný obsah nahoře v panelech (nescrolluje) */
+.brand-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    text-align: center;
+    margin-bottom: 0;
+    
+    /* Vycentrování loga */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.brand-logo {
+    height: 200px; /* Velikost loga (můžete zvětšit/zmenšit dle potřeby) */
+    width: auto;
+    margin-bottom: 0; /* ODSTRANĚNO: Žádná mezera pod logem */
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+/* .brand-text styly můžete smazat, už tam nejsou */
+
+.action-buttons {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+.action-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.1s;
+}
+.action-btn:hover { transform: translateY(-2px); }
+.download { background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+.upload { background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+
+
+/* Oddělovače sekcí */
+.panel-section-title {
+    padding: 15px 20px 5px 20px;
+    background: #fff;
+}
+h3 { 
+    margin: 0; 
+    border-bottom: 3px solid #eee; 
+    padding-bottom: 10px; 
+    font-size: 1.4em; 
+    font-weight: 700; 
+    text-align: center; 
+    color: #2c3e50; 
+    text-transform: uppercase; 
+}
+
+/* === SCROLLOVACÍ ČÁST PANELŮ === */
+.scrollable-content {
+    flex: 1; /* Vyplní zbylé místo */
+    overflow-y: auto; /* Jen tato část scrolluje */
+    padding: 20px;
+}
+
+/* === SEZNAM (VZHLED) === */
 .peak-list-container { list-style: none; padding: 0; margin: 0; }
-.peak-list-container li { padding: 12px 0; border-bottom: 1px solid #eee; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto auto auto; gap: 4px 10px; align-items: center; }
-.peak-list-name { font-size: 1.15em; font-weight: bold; color: #222; grid-column: 1 / 3; grid-row: 1 / 2; margin-bottom: 2px; }
-.peak-list-details { color: #555; font-size: 0.95em; grid-column: 1 / 2; grid-row: 2 / 3; }
-.peak-list-elevation { color: #006400; font-size: 0.95em; font-weight: bold; grid-column: 1 / 2; grid-row: 3 / 4; }
-.peak-list-country { font-size: 0.95em; color: #555; grid-column: 1 / 2; grid-row: 4 / 5; margin-top: 5px; font-style: italic; }
-.peak-list-date { color: #666; font-size: 0.95em; grid-column: 2 / 3; grid-row: 4 / 5; text-align: right; margin-top: 5px; }
-.edit-peak-emoji-btn { grid-column: 2 / 3; grid-row: 5 / 6; justify-self: end; background: none; border: none; padding: 5px; cursor: pointer; font-size: 1.1em; outline: none; }
-.edit-peak-emoji-btn:hover { transform: scale(1.2); }
+.peak-list-container li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    display: grid;
+    grid-template-columns: 1fr auto; 
+    gap: 2px 10px;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+.peak-list-container li:hover {
+    background-color: #fdfdfd;
+    transform: translateX(3px);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+    border-color: #ccc;
+}
+.peak-list-name { font-size: 1.3em; font-weight: 500; color: #222; grid-column: 1 / 3; line-height: 1.2; }
+.peak-list-details { color: #555; font-size: 0.95em; grid-column: 1 / 2; }
+.peak-list-elevation { color: #006400; font-size: 0.95em; font-weight: 500; grid-column: 1 / 2; }
+.peak-list-country { font-size: 0.95em; color: #555; grid-column: 1 / 2; }
+.peak-list-date { color: #666; font-size: 0.9em; grid-column: 2 / 3; grid-row: 4 / 5; text-align: right; margin-top: 5px; align-self: end; }
 
-/* === STATS === */
-.peak-stats-container { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 20px; }
-.peak-stats-container h4 { margin: 0 0 10px 0; text-align: center; font-size: 1em; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-.peak-stat-item { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.95em; border-bottom: 1px dashed #eee; }
-.peak-stat-item.total-row { border-top: 2px solid #ddd; margin-top: 5px; padding-top: 8px; font-weight: bold; color: #000; border-bottom: none; }
-.peak-stat-item.total-row .stat-value { font-size: 1.2em; color: #2D7813; }
-.stat-value { font-weight: bold; color: #000; }
-.total-elevation { text-align: center; font-weight: bold; color: #2d7813; margin-bottom: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px; }
-.total-elevation span { display: block; font-size: 1.6em; margin-top: 5px; }
+/* Špendlík */
+.edit-peak-emoji-btn {
+    grid-column: 2 / 3; grid-row: 1 / 3; justify-self: end; align-self: start;
+    background: none; border: none; cursor: pointer; font-size: 1.5em; padding: 5px;
+    transition: transform 0.2s; opacity: 0.7;
+}
+.edit-peak-emoji-btn:hover { transform: scale(1.2); opacity: 1; }
 
-/* === FILTERS & CHART === */
-.filters { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 20px; background: #fff; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
-.filters label { font-weight: bold; font-size: 0.9em; }
-.filters select, .filters input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-.chart-container { height: 250px; width: 100%; }
 
-/* === MAP === */
-#mapa { width: 100%; height: 100%; }
-.leaflet-top.leaflet-left .leaflet-control-search { margin-top: 10px; margin-left: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-.leaflet-control-search .search-input { border-radius: 4px; height: 30px; border: 1px solid #ccc; }
+/* === STATISTIKY (VZHLED) === */
+.peak-stats-container { background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 25px; }
+.peak-stats-container h4 { margin: 0 0 15px 0; text-align: center; font-size: 1.1em; font-weight: 500; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+.peak-stat-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 1em; border-bottom: 1px dashed #eee; }
+.stat-value { font-weight: 700; color: #000; }
+.peak-stat-item.total-row { border-top: 2px solid #ccc; margin-top: 10px; padding-top: 10px; color: #000; border-bottom: none; }
+.peak-stat-item.total-row .stat-value { font-size: 1.3em; color: #2D7813; }
 
-/* === ALTITUDE FILTER === */
-.leaflet-control-altitude-filter { background: #fff; padding: 12px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.4); width: 220px; margin-left: 10px; margin-top: 10px; clear: both; }
-.altitude-filter-label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #333; }
-.altitude-filter-inputs { display: flex; gap: 5px; margin-bottom: 8px; }
-.altitude-filter-inputs input { width: 50%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; }
+.total-elevation { text-align: center; font-weight: 500; color: #2d7813; margin-bottom: 25px; padding: 15px; background: #e8f5e9; border-radius: 8px; border: 1px solid #c8e6c9; }
+.total-elevation span { display: block; font-size: 2.2em; font-weight: 700; margin-top: 5px; color: #1b5e20; }
+
+.filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; background: #fff; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+.filters label { font-weight: 500; font-size: 1em; margin-bottom: 2px; display: block; }
+.filters select, .filters input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: 'Oswald', sans-serif; font-size: 1em; }
+.chart-container { height: 300px; width: 100%; margin-top: 20px; }
+
+/* === MAPA === */
+#mapa { width: 100%; height: 100%; z-index: 1; }
+
+/* Leaflet styly (převzato z minula, beze změny funkčnosti) */
+.leaflet-control-layers-toggle { width: 30px !important; height: 30px !important; background-size: 20px 20px !important; border-radius: 4px; }
+.leaflet-control-layers { border: none !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important; border-radius: 4px !important; font-family: 'Oswald', sans-serif; }
+.leaflet-control-layers label { font-size: 13px; }
+.leaflet-control-altitude-filter { background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.4); width: 200px; margin-left: 10px; margin-top: 10px; clear: both; font-family: 'Oswald', sans-serif; }
+.altitude-filter-label { display: block; font-weight: 500; margin-bottom: 5px; }
+.altitude-filter-inputs { display: flex; gap: 5px; margin-bottom: 5px; }
+.altitude-filter-inputs input { width: 50%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-family: 'Oswald', sans-serif; }
 .altitude-filter-buttons { display: flex; gap: 5px; }
-.altitude-filter-button, .altitude-filter-reset-button { flex: 1; padding: 5px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 12px; color: white; }
-.altitude-filter-button { background-color: #007bff; }
+.altitude-filter-button, .altitude-filter-reset-button { flex: 1; padding: 4px; border: none; border-radius: 3px; cursor: pointer; font-weight: 500; color: white; text-align: center; font-family: 'Oswald', sans-serif; }
+.altitude-filter-button { background-color: #2a5298; }
 .altitude-filter-reset-button { background-color: #6c757d; }
 
-/* === LEGEND === */
-.legend-container-map { background: rgba(255, 255, 255, 0.95); padding: 12px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); min-width: 140px; }
-.legend-container-map h4 { margin: 0 0 8px 0; text-align: left; font-size: 14px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #333; }
+.leaflet-control-legend { background: #fff; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.4); cursor: pointer; margin-right: 10px; margin-bottom: 10px; font-family: 'Oswald', sans-serif; transition: all 0.2s ease; }
+.legend-toggle { display: block; width: 36px; height: 36px; line-height: 36px; text-align: center; text-decoration: none; font-size: 20px; color: #333; }
+.legend-toggle:hover { background-color: #f4f4f4; }
+.legend-content { display: none; padding: 10px; min-width: 140px; }
+.leaflet-control-legend.legend-expanded .legend-toggle { display: none; }
+.leaflet-control-legend.legend-expanded .legend-content { display: block; }
+.legend-content h4 { margin: 0 0 8px 0; font-size: 14px; font-weight: 500; border-bottom: 1px solid #ccc; padding-bottom: 4px; white-space: nowrap; }
 .legend-list { list-style: none; padding: 0; margin: 0; }
-.legend-list li { display: flex; align-items: center; margin-bottom: 4px; font-size: 13px; color: #444; }
-.legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; border: 1px solid #999; flex-shrink: 0; }
-.legend-separator { height: 1px; background-color: #ddd; margin: 8px 0; }
+.legend-list li { display: flex; align-items: center; margin-bottom: 4px; font-size: 13px; }
+.legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 1px solid #ccc; flex-shrink: 0; }
+.legend-separator { height: 1px; background-color: #ddd; margin: 6px 0; }
 
-/* === POPUP === */
-.popup-checkbox-container { font-size: 13px; min-width: 200px; }
+/* Popup */
+.popup-checkbox-container { font-family: 'Oswald', sans-serif; font-size: 14px; min-width: 200px; }
+.popup-checkbox-container strong { font-size: 1.2em; color: #000; font-weight: 500; }
 .popup-checkbox-container hr { margin: 10px 0; border: 0; border-top: 1px solid #eee; }
 .popup-date-container, .popup-elevation-container { margin-top: 8px; display: flex; align-items: center; }
-.popup-date-container label, .popup-elevation-container label { width: 100px; font-weight: bold; color: #555; }
-.popup-date-container input, .popup-elevation-container input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 3px; }
-.popup-save-button { width: 100%; margin-top: 15px; padding: 8px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.popup-date-container label, .popup-elevation-container label { width: 90px; font-weight: 500; color: #555; }
+.popup-date-container input, .popup-elevation-container input { flex: 1; padding: 4px; border: 1px solid #ccc; border-radius: 3px; font-family: 'Oswald', sans-serif; }
+.popup-save-button { width: 100%; margin-top: 12px; padding: 8px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 1.1em; font-family: 'Oswald', sans-serif; }
 .popup-save-button:hover { background-color: #218838; }
 .climbed-tooltip { background: none; border: none; box-shadow: none; padding: 0; }
-.climbed-label { font-size: 11px; font-weight: bold; color: #000; text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; }
+.climbed-label { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; color: #000; text-shadow: 0 0 2px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9); }

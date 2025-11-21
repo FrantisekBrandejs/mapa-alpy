@@ -4,73 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alpine Peaks</title>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styl.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
-    <header class="page-header">
-        <div class="header-content">
-            <h1>Alpine Peaks</h1>
-            <h2>> 2500 m a. s. l.</h2>
-        </div>
-        
-        <div class="app-controls">
-            <button id="btn-export" class="header-btn">Download Data ⬇️</button>
-            <button id="btn-import" class="header-btn">Upload Data ⬆️</button>
-            <input type="file" id="file-import" style="display: none;" accept=".json,.geojson">
-        </div>
-    </header>
+<body class="map-page">
 
     <main class="page-main">
+        
         <aside class="sidebar-left">
-            <h3>Recently Climbed</h3>
-            <ul id="peak-list" class="peak-list-container"></ul>
+            
+            <div class="brand-header">
+                <img src="logo.svg" alt="Alpine Peaks Logo" class="brand-logo">
+            </div>
+
+            <div class="panel-section-title">
+                <h3>Recently Climbed</h3>
+            </div>
+
+            <div class="scrollable-content">
+                <ul id="peak-list" class="peak-list-container"></ul>
+            </div>
         </aside>
         
         <div id="mapa"></div>
 
         <aside class="sidebar-right">
-            <h3>Statistics</h3>
             
-            <div class="peak-stats-container">
-                <h4>Climbed (by altitude):</h4>
-                <div class="peak-stat-item"><span>&gt; 4000 m:</span><span id="stat-count-4000" class="stat-value">0</span></div>
-                <div class="peak-stat-item"><span>3500–3999 m:</span><span id="stat-count-3500" class="stat-value">0</span></div>
-                <div class="peak-stat-item"><span>3000–3499 m:</span><span id="stat-count-3000" class="stat-value">0</span></div>
-                <div class="peak-stat-item"><span>2500–2999 m:</span><span id="stat-count-2500" class="stat-value">0</span></div>
-                
-                <div class="peak-stat-item total-row">
-                    <span class="stat-label">In Total:</span>
-                    <span id="stat-count-total" class="stat-value">0</span>
-                </div>
+            <div class="action-buttons">
+                <button id="btn-export" class="action-btn download">Download Data ⬇</button>
+                <button id="btn-import" class="action-btn upload">Upload Data ⬆</button>
+                <input type="file" id="file-import" style="display: none;" accept=".json,.geojson">
             </div>
 
-            <div class="total-elevation">Total Elevation Gain:<span id="total-elevation-sum">0 m</span></div>
-            
-            <div class="filters">
-                <label>Country:</label>
-                <select id="filter-country">
-                    <option value="ALL">All</option>
-                    <option value="AUT">Austria</option>
-                    <option value="ITA">Italy</option>
-                    <option value="CHE">Switzerland</option>
-                    <option value="FRA">France</option>
-                    <option value="DEU">Germany</option>
-                    <option value="SVN">Slovenia</option>
-                </select>
-                <label>From:</label><input type="date" id="filter-date-from">
-                <label>To:</label><input type="date" id="filter-date-to">
+            <div class="panel-section-title">
+                <h3>Statistics</h3>
             </div>
-            <div class="chart-container"><canvas id="elevation-chart"></canvas></div>
+            
+            <div class="scrollable-content">
+                <div class="peak-stats-container">
+                    <h4>Climbed (by altitude):</h4>
+                    <div class="peak-stat-item"><span>&gt; 4000 m:</span><span id="stat-count-4000" class="stat-value">0</span></div>
+                    <div class="peak-stat-item"><span>3500–3999 m:</span><span id="stat-count-3500" class="stat-value">0</span></div>
+                    <div class="peak-stat-item"><span>3000–3499 m:</span><span id="stat-count-3000" class="stat-value">0</span></div>
+                    <div class="peak-stat-item"><span>2500–2999 m:</span><span id="stat-count-2500" class="stat-value">0</span></div>
+                    
+                    <div class="peak-stat-item total-row">
+                        <span class="stat-label">In Total:</span>
+                        <span id="stat-count-total" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <div class="total-elevation">Total Elevation Gain:<span id="total-elevation-sum">0 m</span></div>
+                
+                <div class="filters">
+                    <label>Country:</label>
+                    <select id="filter-country">
+                        <option value="ALL">All</option>
+                        <option value="AUT">Austria</option>
+                        <option value="ITA">Italy</option>
+                        <option value="CHE">Switzerland</option>
+                        <option value="FRA">France</option>
+                        <option value="DEU">Germany</option>
+                        <option value="SVN">Slovenia</option>
+                    </select>
+                    <label>From:</label><input type="date" id="filter-date-from">
+                    <label>To:</label><input type="date" id="filter-date-to">
+                </div>
+                
+                <div class="chart-container"><canvas id="elevation-chart"></canvas></div>
+            </div>
         </aside>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
-    
     <script src="storage.js"></script>
     <script src="helpers.js"></script>
     <script src="ui.js"></script>

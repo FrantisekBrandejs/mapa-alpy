@@ -1,9 +1,11 @@
 /* === GLOBAL CONSTANTS & VARIABLES === */
 const STORAGE_KEY_DATA = 'zdolaneVrcholyData';
-const COLOR_ZDOLANO = "#4CE1E1"; 
+// STORAGE_KEY_THEME removed
+const COLOR_ZDOLANO = "#00112eff"; 
 
 // Shared global state
 window.peakLayerMap = new Map();
+window.totalPeakCount = 0;
 window.allPeaksData = []; 
 window.elevationChart = null;
 window.vrcholyGeoJSONLayer = null; 
@@ -34,8 +36,6 @@ function downloadBackup(sourceGeoJsonFeatures) {
 
     featuresToUse.forEach(feature => {
         const id = feature.properties.OBJECTID;
-        
-        // Exportujeme POUZE zdolané
         if (climbedData.hasOwnProperty(id)) {
             let newProperties = { ...feature.properties };
             newProperties.user_status = 'climbed';
@@ -79,14 +79,13 @@ function restoreBackup(jsonContent) {
         const geoJson = JSON.parse(jsonContent);
         if (!geoJson.features || !Array.isArray(geoJson.features)) throw new Error("Invalid GeoJSON");
 
-        let newClimbedData = getPeakData(); // Načteme existující pro sloučení
+        let newClimbedData = {};
         let count = 0;
 
         geoJson.features.forEach(f => {
             const props = f.properties;
             const id = props.OBJECTID;
-            if (id) {
-                // Pokud má status climbed, nebo prostě existuje v záloze
+            if (id && props.user_status === 'climbed') {
                 newClimbedData[id] = {
                     datum: props.user_date || null,
                     elevace: props.user_elevation_gain || null
