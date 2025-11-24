@@ -42,19 +42,20 @@ function savePeakClimb(peakId, defaultColor) {
 
 // Mapa Init
 const map = L.map('mapa');
-const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM', minZoom: 6 });
 const API_KEY = 'mH-sjNiciF2i0Kq9leYtcUYXXak3-quskLtbyfNYFUA';
 const mapyCz = L.tileLayer(`https://api.mapy.com/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${API_KEY}`, { minZoom: 6, attribution: '&copy; Seznam.cz' });
 const mapyCzWinter = L.tileLayer(`https://api.mapy.com/v1/maptiles/winter/256/{z}/{x}/{y}?apikey=${API_KEY}`, { minZoom: 6, attribution: '&copy; Seznam.cz' });
 const mapyCzAerial = L.tileLayer(`https://api.mapy.com/v1/maptiles/aerial/256/{z}/{x}/{y}?apikey=${API_KEY}`, { minZoom: 6, attribution: '&copy; Seznam.cz' });
+const CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', 
+    {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',subdomains: 'abcd',minZoom: 6});
 
-osm.addTo(map);
+CartoDB_Positron.addTo(map);
 
 const vrcholyGroup = L.layerGroup();
 const perimeterGroup = L.layerGroup();
 
 
-const baseMaps = { "OpenStreetMap": osm, "Outdoor": mapyCz, "Winter": mapyCzWinter, "Aerial": mapyCzAerial};
+const baseMaps = { "Basic": CartoDB_Positron, "Outdoor": mapyCz, "Winter": mapyCzWinter, "Aerial": mapyCzAerial};
 const overlayMaps = { "Alpine Peaks": vrcholyGroup, "Perimeter": perimeterGroup};
 
 L.control.layers(baseMaps, overlayMaps).addTo(map);
