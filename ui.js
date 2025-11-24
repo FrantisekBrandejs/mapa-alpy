@@ -59,6 +59,7 @@ function updatePeakList() {
             li.style.borderLeft = `5px solid ${color}`;
 
             li.innerHTML = `
+                <div class="peak-list-name">${peak.name}</div>
                 <div class="peak-list-details">Height: ${altitudeStr}</div>
                 <div class="peak-list-elevation">Gain: ${elevStr}</div>
                 <div class="peak-list-country">${countryName}</div>
